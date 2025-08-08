@@ -1,6 +1,7 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders without crashing', () => {
+test('shows login when no token', () => {
   render(<App />);
+  expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
 });
