@@ -10,16 +10,9 @@ This project converts a static dashboard into a full-stack web application using
    ```bash
    docker-compose up --build
    ```
-   If you previously built the images with BuildKit and see a `KeyError: 'ContainerConfig'`, execute the helper script to reset
-   the containers and images:
-   ```bash
-   ./scripts/reset-containers.sh
-   ```
-4. The React client runs on [http://localhost:3000](http://localhost:3000) and the API server on [http://localhost:5000](http://localhost:5000).
 
-### Authentication
 
-Register a user via the `/api/register` endpoint, then log in through the web UI. A JWT is stored in `localStorage` and appended to requests for protected resources. Use the **Logout** button on the dashboard to clear the token.
+
 
 ## Structure
 
