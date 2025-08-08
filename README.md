@@ -11,9 +11,6 @@ This project converts a static dashboard into a full-stack web application using
    docker-compose up --build
    ```
 
-
-
-
 ## Structure
 
 - `client` – React frontend that loads the dashboard.

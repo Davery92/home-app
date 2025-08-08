@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import './index.css';
 import Login from './Login';
+import Register from './Register';
 
 function App() {
   const [html, setHtml] = useState('');
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [showRegister, setShowRegister] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -16,9 +18,17 @@ function App() {
       .catch(err => console.error('Failed to load dashboard', err));
   }, [token]);
 
-  if (!token) {
-    return <Login onLogin={setToken} />;
-  }
+    if (!token) {
+      if (showRegister) {
+        return (
+          <Register
+            onRegisterComplete={() => setShowRegister(false)}
+            onShowLogin={() => setShowRegister(false)}
+          />
+        );
+      }
+      return <Login onLogin={setToken} onShowRegister={() => setShowRegister(true)} />;
+    }
 
   const handleLogout = () => {
     localStorage.removeItem('token');
