@@ -20,7 +20,23 @@ function App() {
     return <Login onLogin={setToken} />;
   }
 
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    setHtml('');
+  };
+
+  return (
+    <div>
+      <button
+        onClick={handleLogout}
+        className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded"
+      >
+        Logout
+      </button>
+      <div dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  );
 }
 
 export default App;
