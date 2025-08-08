@@ -9,9 +9,7 @@ This project converts a static dashboard into a full-stack web application using
 3. Run the app:
    ```bash
    docker-compose up --build
-   ```
 
-## Structure
 
 - `client` – React frontend that loads the dashboard.
 - `server` – Express API with MongoDB using Mongoose.
