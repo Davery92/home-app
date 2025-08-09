@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -65,6 +66,22 @@ app.post('/api/items', authenticateToken, async (req, res) => {
   const item = new Item({ name: req.body.name });
   await item.save();
   res.status(201).json(item);
+});
+
+app.get('/dashboard.html', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/public/dashboard.html'));
+});
+
+app.get('/app-drawer.html', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/public/app-drawer.html'));
+});
+
+app.get('/screen-saver.html', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/public/screen-saver.html'));
+});
+
+app.get('/help.html', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/public/help.html'));
 });
 
 app.get('/', (req, res) => {
