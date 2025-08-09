@@ -11,7 +11,7 @@ function App() {
 
   const loadPage = (url) => {
     fetch(url, { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => res.text())
+
       .then(text => {
         setHtml(text);
         setTimeout(() => {

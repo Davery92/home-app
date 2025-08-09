@@ -13,10 +13,11 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 const users = [];
 
 const mongoUri = process.env.MONGODB_URI || 'mongodb://mongo:27017/homeapp';
-if (process.env.NODE_ENV !== 'test') {
-  mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+if (mongoose.connection.readyState === 0) {
+  mongoose
+    .connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
+    .catch((err) => console.error('MongoDB connection error:', err));
 }
 
 const ItemSchema = new mongoose.Schema({ name: String });
