@@ -11,13 +11,7 @@ function App() {
 
   const loadPage = (url) => {
     fetch(url, { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => {
-        if (res.status === 401 || res.status === 403) {
-          handleLogout();
-          throw new Error('Unauthorized');
-        }
-        return res.text();
-      })
+
       .then(text => {
         setHtml(text);
         setTimeout(() => {
