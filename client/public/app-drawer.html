@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>App Drawer</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100">
+<div class="main-container max-w-xl mx-auto p-4">
+<h1 class="text-2xl font-bold mb-4">App Drawer</h1>
+<form id="itemForm" class="mb-4 flex">
+<input id="name" class="border flex-grow px-2 py-1" placeholder="Item name" />
+<button class="bg-blue-500 text-white px-3 py-1 ml-2 rounded" type="submit">Add</button>
+</form>
+<ul id="items" class="list-disc pl-5"></ul>
+<a href="/dashboard.html" data-nav class="text-blue-500 underline block mt-4">Back to Dashboard</a>
+</div>
+<script>
+async function loadItems(){
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/items',{headers:{Authorization:'Bearer '+token}});
+  const items = await res.json();
+  const list = document.getElementById('items');
+  list.innerHTML='';
+  items.forEach(i=>{const li=document.createElement('li');li.textContent=i.name;list.appendChild(li);});
+}
+async function addItem(e){
+  e.preventDefault();
+  const name=document.getElementById('name').value.trim();
+  if(!name) return;
+  const token=localStorage.getItem('token');
+  await fetch('/api/items',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({name})});
+  document.getElementById('name').value='';
+  loadItems();
+}
+const form=document.getElementById('itemForm');
+form.addEventListener('submit',addItem);
+loadItems();
+</script>
+</body></html>

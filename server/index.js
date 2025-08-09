@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -12,10 +13,11 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 const users = [];
 
 const mongoUri = process.env.MONGODB_URI || 'mongodb://mongo:27017/homeapp';
-if (process.env.NODE_ENV !== 'test') {
-  mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+if (mongoose.connection.readyState === 0) {
+  mongoose
+    .connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
+    .catch((err) => console.error('MongoDB connection error:', err));
 }
 
 const ItemSchema = new mongoose.Schema({ name: String });
@@ -65,6 +67,22 @@ app.post('/api/items', authenticateToken, async (req, res) => {
   const item = new Item({ name: req.body.name });
   await item.save();
   res.status(201).json(item);
+});
+
+app.get('/dashboard.html', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/public/dashboard.html'));
+});
+
+app.get('/app-drawer.html', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/public/app-drawer.html'));
+});
+
+app.get('/screen-saver.html', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/public/screen-saver.html'));
+});
+
+app.get('/help.html', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/public/help.html'));
 });
 
 app.get('/', (req, res) => {

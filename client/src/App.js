@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './index.css';
 import Login from './Login';
 import Register from './Register';
@@ -7,16 +7,56 @@ function App() {
   const [html, setHtml] = useState('');
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [showRegister, setShowRegister] = useState(false);
+  const containerRef = useRef(null);
+
+  const loadPage = (url) => {
+    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => {
+        if (res.status === 401 || res.status === 403) {
+          handleLogout();
+          throw new Error('Unauthorized');
+        }
+        return res.text();
+      })
+      .then(text => {
+        setHtml(text);
+        setTimeout(() => {
+          const scripts = containerRef.current?.querySelectorAll('script') || [];
+          scripts.forEach(script => {
+            try {
+              // eslint-disable-next-line no-eval
+              eval(script.textContent);
+            } catch (e) {
+              console.error('Error executing script', e);
+            }
+          });
+        }, 0);
+      })
+      .catch(err => console.error('Failed to load page', err));
+  };
 
   useEffect(() => {
     if (!token) return;
-    fetch('/dashboard.html', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => res.text())
-      .then(setHtml)
-      .catch(err => console.error('Failed to load dashboard', err));
+    loadPage('/dashboard.html');
   }, [token]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      const anchor = e.target.closest('a');
+      if (!anchor) return;
+      if (anchor.dataset.nav !== undefined) {
+        e.preventDefault();
+        loadPage(anchor.getAttribute('href'));
+      }
+      if (anchor.dataset.logout !== undefined) {
+        e.preventDefault();
+        handleLogout();
+      }
+    };
+    const current = containerRef.current;
+    current?.addEventListener('click', handler);
+    return () => current?.removeEventListener('click', handler);
+  }, [token, html]);
 
     if (!token) {
       if (showRegister) {
@@ -44,7 +84,7 @@ function App() {
       >
         Logout
       </button>
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+      <div ref={containerRef} dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   );
 }
