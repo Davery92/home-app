@@ -16,7 +16,10 @@ const familySchema = new mongoose.Schema({
   inviteCode: {
     type: String,
     unique: true,
-    required: true
+    required: true,
+    default: function() {
+      return crypto.randomBytes(4).toString('hex').toUpperCase();
+    }
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -73,29 +76,35 @@ familySchema.index({ inviteCode: 1 });
 familySchema.index({ 'members.userId': 1 });
 familySchema.index({ createdBy: 1 });
 
-// Generate unique invite code before saving
+// Ensure invite code is unique before saving
 familySchema.pre('save', async function(next) {
-  if (this.isNew && !this.inviteCode) {
-    let inviteCode;
-    let attempts = 0;
-    const maxAttempts = 10;
-    
-    // Generate unique invite code
-    do {
-      inviteCode = crypto.randomBytes(4).toString('hex').toUpperCase();
-      const existing = await this.constructor.findOne({ inviteCode });
-      if (!existing) {
-        this.inviteCode = inviteCode;
-        break;
+  if (this.isNew) {
+    try {
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      // Check if the generated invite code is unique
+      while (attempts < maxAttempts) {
+        const existing = await this.constructor.findOne({ inviteCode: this.inviteCode });
+        if (!existing) {
+          break;
+        }
+        // Generate a new code if not unique
+        this.inviteCode = crypto.randomBytes(4).toString('hex').toUpperCase();
+        attempts++;
       }
-      attempts++;
-    } while (attempts < maxAttempts);
-    
-    if (attempts === maxAttempts) {
-      return next(new Error('Failed to generate unique invite code'));
+      
+      if (attempts === maxAttempts) {
+        throw new Error('Failed to generate unique invite code');
+      }
+      
+      next();
+    } catch (error) {
+      next(error);
     }
+  } else {
+    next();
   }
-  next();
 });
 
 // Virtual for member count

@@ -25,22 +25,19 @@ services:
       dockerfile: Dockerfile
     container_name: home-app-backend
     restart: unless-stopped
-    ports:
-      - "3001:3001"
+    network_mode: host
     environment:
       NODE_ENV: development
       PORT: 3001
-      MONGODB_URI: mongodb://admin:password123@mongodb:27017/homeapp?authSource=admin
+      MONGODB_URI: mongodb://admin:password123@localhost:27017/homeapp?authSource=admin
       JWT_SECRET: your-super-secret-jwt-key-change-in-production
-      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
-      OLLAMA_MODEL: ${OLLAMA_MODEL}
+      OLLAMA_BASE_URL: http://100.104.68.115:11434
+      OLLAMA_MODEL: hf.co/unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF:Q8_K_XL
     depends_on:
       - mongodb
     volumes:
       - ./backend:/app
       - /app/node_modules
-    networks:
-      - home-app-network
 
   # Frontend Next.js App
   frontend:

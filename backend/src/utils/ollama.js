@@ -4,6 +4,10 @@ class OllamaService {
   constructor() {
     this.baseURL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
     this.model = process.env.OLLAMA_MODEL || 'llama2';
+    console.log('Ollama Service initialized with:', {
+      baseURL: this.baseURL,
+      model: this.model
+    });
   }
 
   async generateMealPlan(preferences = {}) {
@@ -170,6 +174,31 @@ Example format:
     }
   }
 
+  async generateResponse(prompt) {
+    try {
+      const response = await axios.post(`${this.baseURL}/api/generate`, {
+        model: this.model,
+        prompt: prompt,
+        stream: false,
+        options: {
+          temperature: 0.7,
+          top_p: 0.9,
+          max_tokens: 500
+        }
+      }, {
+        timeout: 5000, // Reduced timeout to 5 seconds
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return response.data.response;
+    } catch (error) {
+      console.error('Ollama API error:', error.message);
+      throw error;
+    }
+  }
+
   async testConnection() {
     try {
       const response = await axios.get(`${this.baseURL}/api/tags`, {
@@ -194,4 +223,11 @@ Example format:
   }
 }
 
-module.exports = new OllamaService();
+// Export the service instance
+const ollamaService = new OllamaService();
+
+// Also export a convenience function for generating responses
+module.exports = ollamaService;
+module.exports.generateOllamaResponse = async (prompt) => {
+  return ollamaService.generateResponse(prompt);
+};

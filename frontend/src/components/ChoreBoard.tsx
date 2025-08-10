@@ -1,101 +1,518 @@
 'use client'
 
 import React, { useState } from 'react'
+import Card from './ui/Card'
+import { useChores } from '@/hooks/useChores'
+import { useFamilyMembers } from '@/hooks/useFamilyMembers'
 
 interface Chore {
   id: string
   title: string
+  description?: string
   isCompleted: boolean
   points: number
+  assignedTo: string
+  assignedBy: string
+  dueDate?: string
+  completedAt?: string
+  priority: 'low' | 'medium' | 'high'
+  category: 'cleaning' | 'kitchen' | 'yard' | 'pets' | 'personal' | 'other'
 }
 
-interface CompletedChore {
-  title: string
-  stickerUrl: string
+interface FamilyMember {
+  id: string
+  name: string
+  avatar: string
+  totalPoints: number
+  completedToday: number
+  color: string
+  hasAccount?: boolean
 }
 
-const ChoreBoard: React.FC = () => {
-  const [chores, setChores] = useState<Chore[]>([
-    { id: '1', title: 'Wash the Dishes', isCompleted: false, points: 1 },
-    { id: '2', title: 'Put Toys Away', isCompleted: false, points: 1 }
-  ])
+interface ChoreBoardProps {
+  familyMembers?: FamilyMember[]
+  chores?: Chore[]
+  loading?: boolean
+  error?: string | null
+}
 
-  const completedChores: CompletedChore[] = [
-    {
-      title: 'Wash the Dishes',
-      stickerUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDgknppLo-rnQKF7EByASeuChZ-FZECzK5B8vwmWreAJ5nQDvlA9CXuu92FRjw0YldmJdwoHJzi7l0KZZCZ88MoO-AqAOy5hoT2aIVZ1Dn-kPMePyis8s4AQOuFzxc_l8MEd94B_OzabD8E798UzNoNQ7x7NVHO33CSBE5hXk2u-cuQA0ThD_zhohB5HAejIUYZqmGe1bV2vCRry54Pq1kf7TXvoatndRkB6QD4aDaez3AQjOywc9ScQszHm1jeuHP4yuHwgG12EHCE'
-    },
-    {
-      title: 'Make the Bed',
-      stickerUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuANYgAudQYwT3Ar0yctezEUJAgEZR0th-JMUx4F9cgQ1oTqPPEY11mNJn7LcoBEq9bW7mu84fcb2C2gD3m1KvcSTQmGMUcT7YcJr_mz352POdtklWS7MFzZiLVpk6yYgeL80lVirRsbHCgC70PPCxogloQpZh-RvCVLfHiny5gbvk-xqYMigmAZQ2SEMgvXEMenaAJJGDRjFTQ-2h34MIbTOUrBev9QW8Bm2hOgb3z8R2MFau_E7RtW1IxoRRb69odMQeZsV7-uvGDg'
+const ChoreBoard: React.FC<ChoreBoardProps> = ({ 
+  familyMembers: propFamilyMembers = [],
+  chores: propChores = [],
+  loading: propLoading = false,
+  error: propError = null
+}) => {
+  // Use hooks if props are not provided (backwards compatibility)
+  const {
+    chores: hookChores,
+    loading: hookChoresLoading,
+    error: hookChoresError,
+    addChore,
+    updateChore,
+    toggleChore,
+    deleteChore,
+    completedToday,
+    totalChores,
+    completionRate,
+  } = useChores()
+
+  const {
+    members: hookFamilyMembers,
+    loading: hookMembersLoading,
+    error: hookMembersError,
+  } = useFamilyMembers()
+
+  // Use props if provided, otherwise use hooks
+  const chores = propChores.length > 0 ? propChores : hookChores
+  const familyMembers = propFamilyMembers.length > 0 ? propFamilyMembers : hookFamilyMembers
+  const loading = propLoading || hookChoresLoading || hookMembersLoading
+  const error = propError || hookChoresError || hookMembersError
+
+  const [editingChore, setEditingChore] = useState<string | null>(null)
+  const [showAddChore, setShowAddChore] = useState(false)
+  const [newChore, setNewChore] = useState({ 
+    title: '', 
+    points: 1, 
+    assignedTo: '', 
+    assignedToType: 'member' as 'user' | 'member',
+    priority: 'medium' as 'low' | 'medium' | 'high',
+    category: 'other' as 'cleaning' | 'kitchen' | 'yard' | 'pets' | 'personal' | 'other'
+  })
+
+  // Calculate stats from actual chores data
+  const actualCompletedToday = chores.filter(chore => chore.isCompleted).length
+  const actualTotalChores = chores.length
+  const actualCompletionRate = actualTotalChores > 0 ? Math.round((actualCompletedToday / actualTotalChores) * 100) : 0
+
+  const handleToggleChore = async (choreId: string) => {
+    try {
+      await toggleChore(choreId)
+    } catch (error) {
+      console.error('Failed to toggle chore:', error)
     }
-  ]
+  }
 
-  const totalStars = 4
-  const totalFire = 10
+  const handleAddChore = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (newChore.title.trim() && newChore.assignedTo) {
+      try {
+        // Determine assignment type and ID based on selected assignee
+        let assignedToId = newChore.assignedTo
+        let assignedToType: 'user' | 'member' = 'member'
+        
+        // If assignee starts with 'user-', it's a user account
+        if (newChore.assignedTo.startsWith('user-')) {
+          assignedToType = 'user'
+          assignedToId = newChore.assignedTo.replace('user-', '')
+        }
 
-  const toggleChore = (choreId: string) => {
-    setChores(chores.map(chore => 
-      chore.id === choreId 
-        ? { ...chore, isCompleted: !chore.isCompleted }
-        : chore
-    ))
+        await addChore({
+          title: newChore.title.trim(),
+          points: newChore.points,
+          assignedTo: assignedToId,
+          assignedToType,
+          priority: newChore.priority,
+          category: newChore.category,
+        })
+
+        setNewChore({ title: '', points: 1, assignedTo: '', assignedToType: 'member', priority: 'medium', category: 'other' })
+        setShowAddChore(false)
+      } catch (error) {
+        console.error('Failed to add chore:', error)
+        alert('Failed to add chore. Please try again.')
+      }
+    }
+  }
+
+  const handleDeleteChore = async (choreId: string) => {
+    if (confirm('Are you sure you want to delete this chore?')) {
+      try {
+        await deleteChore(choreId)
+      } catch (error) {
+        console.error('Failed to delete chore:', error)
+        alert('Failed to delete chore. Please try again.')
+      }
+    }
+  }
+
+  if (error) {
+    return (
+      <Card className="p-6 bg-gradient-to-br from-white/90 to-red-50/90 backdrop-blur-sm border border-white/20">
+        <div className="text-center">
+          <div className="text-red-500 text-4xl mb-4">❌</div>
+          <h3 className="text-lg font-bold text-gray-800 mb-2">Failed to Load Chore Board</h3>
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      </Card>
+    )
   }
 
   return (
-    <div className="bg-white p-6 rounded-3xl flex-grow animate-fade-in">
-      <h3 className="text-lg font-semibold">Nora</h3>
-      
-      {/* Stats */}
-      <div className="flex items-center justify-between text-sm text-gray-500 mt-2">
-        <span>Today's Chores</span>
+    <Card className="p-6 bg-gradient-to-br from-white/90 to-purple-50/90 backdrop-blur-sm border border-white/20">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <div className="w-12 h-12 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full flex items-center justify-center">
+            <span className="text-white text-xl">📋</span>
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-gray-800">Family Chore Board</h3>
+            <p className="text-sm text-gray-500">{actualCompletionRate}% completed today</p>
+          </div>
+        </div>
+        
         <div className="flex items-center space-x-2">
-          <span className="material-icons text-blue-500 text-base">star</span>
-          <span>{totalStars}</span>
-          <span className="material-icons text-yellow-500 text-base">whatshot</span>
-          <span>{totalFire}</span>
+          <div className="text-center">
+            <div className="flex items-center space-x-1">
+              <div className="text-green-500 text-lg">✅</div>
+              <span className="font-bold text-gray-700">{actualCompletedToday}</span>
+            </div>
+            <p className="text-xs text-gray-500">Done</p>
+          </div>
+          <div className="text-gray-300">|</div>
+          <div className="text-center">
+            <div className="flex items-center space-x-1">
+              <div className="text-blue-500 text-lg">📝</div>
+              <span className="font-bold text-gray-700">{actualTotalChores}</span>
+            </div>
+            <p className="text-xs text-gray-500">Total</p>
+          </div>
         </div>
       </div>
 
-      <div className="space-y-4 mt-4">
-        {/* Active Chores */}
-        {chores.map((chore) => (
-          <div key={chore.id} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg">
-            <div className="flex items-center">
-              <span className="material-icons text-blue-500 mr-3">star</span>
-              <span className={chore.isCompleted ? 'line-through text-gray-500' : ''}>
-                {chore.title}
-              </span>
-            </div>
-            <button
-              onClick={() => toggleChore(chore.id)}
-              className={`w-5 h-5 border-2 rounded-full ${
-                chore.isCompleted 
-                  ? 'bg-green-500 border-green-500' 
-                  : 'border-gray-300 hover:border-gray-400'
-              } transition-colors duration-200`}
-            >
-              {chore.isCompleted && (
-                <span className="material-icons text-white text-sm">check</span>
-              )}
-            </button>
+      {/* Family Members */}
+      {familyMembers.length > 0 && (
+        <div className="mb-6">
+          <h4 className="text-sm font-semibold text-gray-600 mb-3">Family Members</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {familyMembers.map((member) => (
+              <div key={member.id} className={`bg-gradient-to-r ${member.color} rounded-xl p-3 text-white`}>
+                <div className="flex items-center space-x-2">
+                  <span className="text-2xl">{member.avatar}</span>
+                  <div>
+                    <p className="font-semibold text-sm">{member.name}</p>
+                    <p className="text-xs opacity-90">{member.completedToday} done today</p>
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center space-x-1">
+                  <span className="text-yellow-200 text-sm">⭐</span>
+                  <span className="text-xs font-medium">{member.totalPoints} points</span>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+      )}
 
-        {/* Completed Chores */}
-        {completedChores.map((chore, index) => (
-          <div key={index} className="bg-blue-100 p-3 rounded-lg">
-            <span className="text-xs text-blue-600 font-semibold">Well Done!</span>
-            <div className="flex items-center justify-between mt-1">
-              <span className="text-gray-500 line-through">{chore.title}</span>
-              <img 
-                alt="stickers" 
-                className="h-8 w-8 object-contain" 
-                src={chore.stickerUrl}
-              />
+      {loading ? (
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading chores...</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {/* Active Chores */}
+          {chores.map((chore) => (
+            <div 
+              key={chore.id} 
+              className={`relative group p-4 rounded-2xl transition-all duration-200 ${
+                chore.isCompleted 
+                  ? 'bg-green-50 border border-green-200' 
+                  : 'bg-white/80 border border-gray-100 hover:shadow-md'
+              }`}
+            >
+              {editingChore === chore.id ? (
+                <ChoreEditForm 
+                  chore={chore}
+                  familyMembers={familyMembers}
+                  onSave={(updates) => updateChore(chore.id, updates)}
+                  onCancel={() => setEditingChore(null)}
+                  onDelete={() => handleDeleteChore(chore.id)}
+                />
+              ) : (
+                <>
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => setEditingChore(chore.id)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-1 text-xs"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => handleDeleteChore(chore.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 text-xs"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className={`p-2 rounded-full ${
+                        chore.isCompleted 
+                          ? 'bg-green-100' 
+                          : 'bg-purple-100'
+                      }`}>
+                        <div className={`text-sm ${
+                          chore.isCompleted 
+                            ? 'text-green-600' 
+                            : 'text-purple-600'
+                        }`}>
+                          {chore.isCompleted ? '✅' : '⭕'}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className={`font-medium ${
+                            chore.isCompleted 
+                              ? 'line-through text-gray-500' 
+                              : 'text-gray-800'
+                          }`}>
+                            {chore.title}
+                          </span>
+                          <div className="flex items-center space-x-2">
+                            {(() => {
+                              const assignee = familyMembers.find(m => m.name === chore.assignedTo);
+                              return assignee ? (
+                                <div className={`bg-gradient-to-r ${assignee.color} px-2 py-1 rounded-full text-white text-xs font-medium flex items-center space-x-1`}>
+                                  <span>{assignee.avatar}</span>
+                                  <span>{assignee.name}</span>
+                                </div>
+                              ) : (
+                                <div className="bg-gray-200 px-2 py-1 rounded-full text-gray-600 text-xs font-medium">
+                                  {chore.assignedTo}
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3 mt-1">
+                          <div className="flex items-center space-x-1">
+                            <div className="text-yellow-500 text-xs">⭐</div>
+                            <span className="text-xs text-gray-500">{chore.points} points</span>
+                          </div>
+                          <span className="text-xs text-gray-400">•</span>
+                          <span className="text-xs text-gray-400">Assigned by {chore.assignedBy}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => handleToggleChore(chore.id)}
+                      className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 ml-3 ${
+                        chore.isCompleted 
+                          ? 'bg-green-500 border-green-500 text-white' 
+                          : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50'
+                      }`}
+                    >
+                      {chore.isCompleted && (
+                        <div className="text-sm text-white">✓</div>
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
-          </div>
-        ))}
+          ))}
+
+          {/* Add New Chore */}
+          {showAddChore ? (
+            <form onSubmit={handleAddChore} className="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4">
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={newChore.title}
+                  onChange={(e) => setNewChore({ ...newChore, title: e.target.value })}
+                  placeholder="Enter chore name..."
+                  className="w-full px-3 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  autoFocus
+                />
+                <div className="flex items-center space-x-3">
+                  <select
+                    value={newChore.assignedTo}
+                    onChange={(e) => setNewChore({ ...newChore, assignedTo: e.target.value })}
+                    className="flex-1 px-3 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">Assign to...</option>
+                    {familyMembers.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.avatar} {member.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={newChore.points}
+                    onChange={(e) => setNewChore({ ...newChore, points: parseInt(e.target.value) })}
+                    className="px-3 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value={1}>⭐ 1 pt</option>
+                    <option value={2}>⭐ 2 pts</option>
+                    <option value={3}>⭐ 3 pts</option>
+                    <option value={5}>⭐ 5 pts</option>
+                    <option value={10}>⭐ 10 pts</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex space-x-2 mt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition-colors duration-200 font-medium"
+                >
+                  Add Chore
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddChore(false)
+                    setNewChore({ title: '', points: 1, assignedTo: '', assignedToType: 'member', priority: 'medium', category: 'other' })
+                  }}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          ) : (
+            <button
+              onClick={() => setShowAddChore(true)}
+              className="w-full border-2 border-dashed border-purple-300 rounded-2xl p-4 text-purple-600 hover:border-purple-400 hover:bg-purple-50 transition-all duration-200 flex items-center justify-center space-x-2"
+            >
+              <div className="text-xl">+</div>
+              <span className="font-medium">Add New Chore</span>
+            </button>
+          )}
+
+          {/* Completed Chores Summary */}
+          {actualCompletedToday > 0 && (
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-semibold text-green-800 mb-1">🎉 Great Progress!</h4>
+                    <p className="text-sm text-green-700">
+                      {actualCompletedToday} of {actualTotalChores} chores completed ({actualCompletionRate}%)
+                    </p>
+                  </div>
+                  <div className="text-3xl">
+                    {actualCompletionRate === 100 ? '🏆' : actualCompletionRate >= 75 ? '⭐' : '👍'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </Card>
+  )
+}
+
+// Chore Edit Form Component
+const ChoreEditForm: React.FC<{
+  chore: Chore
+  familyMembers: FamilyMember[]
+  onSave: (updates: Partial<Chore>) => Promise<any>
+  onCancel: () => void
+  onDelete: () => void
+}> = ({ chore, familyMembers, onSave, onCancel, onDelete }) => {
+  const [title, setTitle] = useState(chore.title)
+  const [points, setPoints] = useState(chore.points)
+  const [assignedTo, setAssignedTo] = useState(() => {
+    // Find the assigned member by name
+    const assignee = familyMembers.find(m => m.name === chore.assignedTo)
+    return assignee?.id || ''
+  })
+  const [loading, setLoading] = useState(false)
+
+  const handleSave = async () => {
+    if (title.trim()) {
+      try {
+        setLoading(true)
+        
+        // Determine assignment type and ID
+        let assignedToId = assignedTo
+        let assignedToType: 'user' | 'member' = 'member'
+        
+        if (assignedTo.startsWith('user-')) {
+          assignedToType = 'user'
+          assignedToId = assignedTo.replace('user-', '')
+        }
+
+        await onSave({ 
+          title: title.trim(), 
+          points, 
+          assignedTo: assignedToId,
+          assignedToType
+        })
+      } catch (error) {
+        console.error('Failed to update chore:', error)
+        alert('Failed to update chore. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        autoFocus
+        disabled={loading}
+      />
+      <div className="flex space-x-3">
+        <select
+          value={assignedTo}
+          onChange={(e) => setAssignedTo(e.target.value)}
+          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          disabled={loading}
+        >
+          <option value="">Assign to...</option>
+          {familyMembers.map((member) => (
+            <option key={member.id} value={member.id}>
+              {member.avatar} {member.name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={points}
+          onChange={(e) => setPoints(parseInt(e.target.value))}
+          className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          disabled={loading}
+        >
+          <option value={1}>⭐ 1 pt</option>
+          <option value={2}>⭐ 2 pts</option>
+          <option value={3}>⭐ 3 pts</option>
+          <option value={5}>⭐ 5 pts</option>
+          <option value={10}>⭐ 10 pts</option>
+        </select>
+      </div>
+      <div className="flex space-x-2">
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium text-sm disabled:opacity-50"
+        >
+          {loading ? 'Saving...' : 'Save'}
+        </button>
+        <button
+          onClick={onCancel}
+          disabled={loading}
+          className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onDelete}
+          disabled={loading}
+          className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm disabled:opacity-50"
+        >
+          Delete
+        </button>
       </div>
     </div>
   )
