@@ -68,6 +68,22 @@ class ApiService {
     return this.handleResponse(response);
   }
 
+  async clearMemberPoints(token: string, memberId: string) {
+    const response = await fetch(`${API_BASE_URL}/family-members/${memberId}/clear-points`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async clearAllFamilyPoints(token: string) {
+    const response = await fetch(`${API_BASE_URL}/family-members/clear-all-points`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
   // Chores API
   async getChores(token: string) {
     const response = await fetch(`${API_BASE_URL}/chores`, {

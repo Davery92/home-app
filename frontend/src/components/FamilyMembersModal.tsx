@@ -21,6 +21,8 @@ interface FamilyMembersModalProps {
   onAddMember?: (memberData: { name: string; avatar: string; color: string }) => Promise<any>
   onUpdateMember?: (memberId: string, updates: { name?: string; avatar?: string; color?: string }) => Promise<any>
   onDeleteMember?: (memberId: string) => Promise<any>
+  onClearMemberPoints?: (memberId: string) => Promise<any>
+  onClearAllPoints?: () => Promise<any>
 }
 
 const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
@@ -30,7 +32,9 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
   onUpdateMembers,
   onAddMember,
   onUpdateMember,
-  onDeleteMember
+  onDeleteMember,
+  onClearMemberPoints,
+  onClearAllPoints
 }) => {
   const [members, setMembers] = useState<FamilyMember[]>(familyMembers)
   const [editingMember, setEditingMember] = useState<string | null>(null)
@@ -122,6 +126,39 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
     }
   }
 
+  const clearMemberPoints = async (memberId: string) => {
+    const member = members.find(m => m.id === memberId)
+    if (confirm(`Clear all points for ${member?.name}? This will reset their total points and daily completed count to zero.`)) {
+      if (onClearMemberPoints) {
+        try {
+          setLoading(true)
+          await onClearMemberPoints(memberId)
+        } catch (error) {
+          console.error('Failed to clear member points:', error)
+          alert('Failed to clear points. Please try again.')
+        } finally {
+          setLoading(false)
+        }
+      }
+    }
+  }
+
+  const clearAllPoints = async () => {
+    if (confirm('Clear ALL points for the entire family? This will reset all members\' total points and daily completed counts to zero.')) {
+      if (onClearAllPoints) {
+        try {
+          setLoading(true)
+          await onClearAllPoints()
+        } catch (error) {
+          console.error('Failed to clear all points:', error)
+          alert('Failed to clear all points. Please try again.')
+        } finally {
+          setLoading(false)
+        }
+      }
+    }
+  }
+
   const editableMembers = members.filter(m => !m.hasAccount)
   const accountHolders = members.filter(m => m.hasAccount)
 
@@ -139,6 +176,7 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
               <p className="text-sm text-gray-500">Manage your family's members and chore assignments</p>
             </div>
           </div>
+          
           <button 
             onClick={onClose}
             className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"

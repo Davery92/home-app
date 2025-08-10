@@ -80,4 +80,11 @@ familyMemberSchema.methods.removePoints = function(points) {
   return this;
 };
 
+// Method to clear all points
+familyMemberSchema.methods.clearPoints = function() {
+  this.totalPoints = 0;
+  this.completedToday = 0;
+  return this;
+};
+
 module.exports = mongoose.model('FamilyMember', familyMemberSchema);

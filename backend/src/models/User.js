@@ -44,6 +44,11 @@ const userSchema = new mongoose.Schema({
     ref: 'Family',
     default: null
   },
+  points: {
+    total: { type: Number, default: 0 },
+    completedToday: { type: Number, default: 0 },
+    lastResetDate: { type: Date, default: Date.now }
+  },
   settings: {
     notifications: {
       email: { type: Boolean, default: true },
@@ -103,6 +108,38 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 userSchema.virtual('profile.fullName').get(function() {
   return `${this.profile.firstName} ${this.profile.lastName}`;
 });
+
+// Reset daily points if it's a new day
+userSchema.methods.resetDailyPointsIfNeeded = function() {
+  const today = new Date();
+  const lastReset = this.points.lastResetDate;
+  
+  if (today.toDateString() !== lastReset.toDateString()) {
+    this.points.completedToday = 0;
+    this.points.lastResetDate = today;
+  }
+};
+
+// Add points
+userSchema.methods.addPoints = function(points) {
+  this.resetDailyPointsIfNeeded();
+  this.points.total += points;
+  this.points.completedToday += 1;
+};
+
+// Remove points
+userSchema.methods.removePoints = function(points) {
+  this.resetDailyPointsIfNeeded();
+  this.points.total = Math.max(0, this.points.total - points);
+  this.points.completedToday = Math.max(0, this.points.completedToday - 1);
+};
+
+// Clear all points
+userSchema.methods.clearPoints = function() {
+  this.points.total = 0;
+  this.points.completedToday = 0;
+  this.points.lastResetDate = new Date();
+};
 
 // Remove sensitive data when converting to JSON
 userSchema.methods.toJSON = function() {

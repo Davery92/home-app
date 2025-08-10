@@ -22,18 +22,24 @@ router.get('/', authenticateToken, async (req, res) => {
     }).sort({ createdAt: 1 });
 
     // Get family account holders
-    const family = await Family.findById(user.familyId._id).populate('members.userId', 'profile email');
-    const accountHolders = family.members.map(member => ({
-      id: member.userId._id,
-      name: `${member.userId.profile.firstName} ${member.userId.profile.lastName}`,
-      avatar: '👤',
-      totalPoints: 0, // TODO: Calculate from completed chores
-      completedToday: 0, // TODO: Calculate from today's completed chores
-      color: 'from-blue-400 to-indigo-400',
-      hasAccount: true,
-      role: member.role,
-      joinedAt: member.joinedAt
-    }));
+    const family = await Family.findById(user.familyId._id).populate('members.userId');
+    
+    const accountHolders = family.members.map(member => {
+      // Access user data directly from populated member
+      const userDoc = member.userId;
+      
+      return {
+        id: userDoc._id,
+        name: `${userDoc.profile.firstName} ${userDoc.profile.lastName}`,
+        avatar: '👤',
+        totalPoints: userDoc.points?.total || 0,
+        completedToday: userDoc.points?.completedToday || 0,
+        color: 'from-blue-400 to-indigo-400',
+        hasAccount: true,
+        role: member.role,
+        joinedAt: member.joinedAt
+      };
+    });
 
     // Combine both types
     const allMembers = [
@@ -232,6 +238,114 @@ router.delete('/:memberId', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error deleting family member:', error);
     res.status(500).json({ message: 'Failed to delete family member' });
+  }
+});
+
+// Clear points for a specific family member
+router.patch('/:memberId/clear-points', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user || !user.familyId) {
+      return res.status(400).json({ message: 'User is not part of any family' });
+    }
+
+    const { memberId } = req.params;
+
+    // Check if it's a user account or family member
+    if (memberId.length === 24) { // MongoDB ObjectId length
+      // Try to find as user account first
+      const targetUser = await User.findOne({ _id: memberId, familyId: user.familyId });
+      if (targetUser) {
+        targetUser.clearPoints();
+        await targetUser.save();
+        
+        return res.json({
+          success: true,
+          message: 'User points cleared successfully',
+          member: {
+            id: targetUser._id,
+            name: `${targetUser.profile.firstName} ${targetUser.profile.lastName}`,
+            totalPoints: 0,
+            completedToday: 0,
+            hasAccount: true
+          }
+        });
+      }
+
+      // Try to find as family member
+      const familyMember = await FamilyMember.findOne({
+        _id: memberId,
+        family: user.familyId,
+        isActive: true
+      });
+
+      if (familyMember) {
+        familyMember.clearPoints();
+        await familyMember.save();
+        
+        return res.json({
+          success: true,
+          message: 'Family member points cleared successfully',
+          member: {
+            id: familyMember._id,
+            name: familyMember.name,
+            totalPoints: 0,
+            completedToday: 0,
+            hasAccount: false
+          }
+        });
+      }
+    }
+
+    res.status(404).json({ message: 'Family member not found' });
+
+  } catch (error) {
+    console.error('Error clearing member points:', error);
+    res.status(500).json({ message: 'Failed to clear points' });
+  }
+});
+
+// Clear points for all family members
+router.patch('/clear-all-points', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user || !user.familyId) {
+      return res.status(400).json({ message: 'User is not part of any family' });
+    }
+
+    // Clear points for all family members (non-account)
+    await FamilyMember.updateMany(
+      { family: user.familyId, isActive: true },
+      { $set: { totalPoints: 0, completedToday: 0 } }
+    );
+
+    // Clear points for all users in the family
+    const family = await Family.findById(user.familyId);
+    const userIds = family.members.map(m => m.userId);
+    
+    await User.updateMany(
+      { _id: { $in: userIds } },
+      { 
+        $set: { 
+          'points.total': 0, 
+          'points.completedToday': 0,
+          'points.lastResetDate': new Date()
+        } 
+      }
+    );
+
+    res.json({
+      success: true,
+      message: 'All family points cleared successfully',
+      clearedMembers: userIds.length + await FamilyMember.countDocuments({
+        family: user.familyId,
+        isActive: true
+      })
+    });
+
+  } catch (error) {
+    console.error('Error clearing all points:', error);
+    res.status(500).json({ message: 'Failed to clear all points' });
   }
 });
 

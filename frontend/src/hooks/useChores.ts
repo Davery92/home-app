@@ -111,10 +111,22 @@ export const useChores = () => {
   const toggleChore = async (choreId: string) => {
     if (!token) throw new Error('No authentication token');
 
+    // Optimistic update - immediately update UI
+    setChores(prev => prev.map(chore => 
+      chore.id === choreId 
+        ? { 
+            ...chore, 
+            isCompleted: !chore.isCompleted, 
+            completedAt: !chore.isCompleted ? new Date().toISOString() : null 
+          }
+        : chore
+    ));
+
     try {
       const response = await apiService.toggleChore(token, choreId);
       
       if (response.success) {
+        // Update with server response (in case server data differs)
         setChores(prev => prev.map(chore => 
           chore.id === choreId 
             ? { ...chore, isCompleted: response.chore.isCompleted, completedAt: response.chore.completedAt }
@@ -122,9 +134,22 @@ export const useChores = () => {
         ));
         return response.chore;
       } else {
+        // Revert optimistic update on failure
+        setChores(prev => prev.map(chore => 
+          chore.id === choreId 
+            ? { ...chore, isCompleted: !chore.isCompleted, completedAt: chore.completedAt }
+            : chore
+        ));
         throw new Error(response.message || 'Failed to toggle chore');
       }
     } catch (err) {
+      // Revert optimistic update on error
+      setChores(prev => prev.map(chore => 
+        chore.id === choreId 
+          ? { ...chore, isCompleted: !chore.isCompleted, completedAt: chore.completedAt }
+          : chore
+      ));
+      
       const error = err instanceof Error ? err.message : 'Failed to toggle chore';
       setError(error);
       throw new Error(error);
@@ -134,16 +159,31 @@ export const useChores = () => {
   const deleteChore = async (choreId: string) => {
     if (!token) throw new Error('No authentication token');
 
+    // Store the chore in case we need to restore it
+    const choreToDelete = chores.find(chore => chore.id === choreId);
+    
+    // Optimistic update - immediately remove from UI
+    setChores(prev => prev.filter(chore => chore.id !== choreId));
+
     try {
       const response = await apiService.deleteChore(token, choreId);
       
       if (response.success) {
-        setChores(prev => prev.filter(chore => chore.id !== choreId));
+        console.log('Chore deleted successfully:', choreId);
         return true;
       } else {
+        // Restore chore on failure
+        if (choreToDelete) {
+          setChores(prev => [choreToDelete, ...prev]);
+        }
         throw new Error(response.message || 'Failed to delete chore');
       }
     } catch (err) {
+      // Restore chore on error
+      if (choreToDelete) {
+        setChores(prev => [choreToDelete, ...prev]);
+      }
+      
       const error = err instanceof Error ? err.message : 'Failed to delete chore';
       setError(error);
       throw new Error(error);
@@ -160,6 +200,43 @@ export const useChores = () => {
   const totalChores = chores.length;
   const completionRate = totalChores > 0 ? Math.round((completedToday / totalChores) * 100) : 0;
 
+  const clearCompletedChores = async () => {
+    if (!token) throw new Error('No authentication token');
+
+    const completedChores = chores.filter(chore => chore.isCompleted);
+    if (completedChores.length === 0) return;
+
+    // Optimistic update - remove completed chores immediately
+    setChores(prev => prev.filter(chore => !chore.isCompleted));
+
+    try {
+      // Delete all completed chores
+      const deletePromises = completedChores.map(chore => 
+        apiService.deleteChore(token, chore.id)
+      );
+      
+      const results = await Promise.all(deletePromises);
+      const failedDeletes = results.filter(result => !result.success);
+      
+      if (failedDeletes.length > 0) {
+        // Restore failed chores
+        const failedChoreIds = failedDeletes.map((_, index) => completedChores[index]);
+        setChores(prev => [...prev, ...failedChoreIds]);
+        throw new Error(`Failed to delete ${failedDeletes.length} chore(s)`);
+      }
+      
+      console.log(`Cleared ${completedChores.length} completed chores`);
+      return true;
+    } catch (err) {
+      // Restore all completed chores on error
+      setChores(prev => [...prev, ...completedChores]);
+      
+      const error = err instanceof Error ? err.message : 'Failed to clear completed chores';
+      setError(error);
+      throw new Error(error);
+    }
+  };
+
   return {
     chores,
     loading,
@@ -171,6 +248,7 @@ export const useChores = () => {
     updateChore,
     toggleChore,
     deleteChore,
+    clearCompletedChores,
     refreshChores: fetchChores,
   };
 };

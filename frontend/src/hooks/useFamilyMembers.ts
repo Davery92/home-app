@@ -109,26 +109,60 @@ export const useFamilyMembers = () => {
     }
   };
 
-  // Initialize with current user as a member
-  useEffect(() => {
-    if (user && members.length === 0 && !loading) {
-      const currentUserMember: FamilyMember = {
-        id: 'user-' + user.id,
-        name: `${user.profile?.firstName || 'You'}`,
-        avatar: '👤',
-        totalPoints: 0,
-        completedToday: 0,
-        color: 'from-blue-400 to-indigo-400',
-        hasAccount: true,
-      };
-      setMembers(prev => [currentUserMember, ...prev]);
-    }
-  }, [user, members.length, loading]);
+  // Note: Current user is automatically included by the backend API as an account holder
 
   // Fetch members on mount
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
+
+  const clearMemberPoints = async (memberId: string) => {
+    if (!token) throw new Error('No authentication token');
+
+    try {
+      const response = await apiService.clearMemberPoints(token, memberId);
+      
+      if (response.success) {
+        // Update local state immediately
+        setMembers(prev => prev.map(member =>
+          member.id === memberId 
+            ? { ...member, totalPoints: 0, completedToday: 0 }
+            : member
+        ));
+        return response;
+      } else {
+        throw new Error(response.message || 'Failed to clear member points');
+      }
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Failed to clear member points';
+      setError(error);
+      throw new Error(error);
+    }
+  };
+
+  const clearAllFamilyPoints = async () => {
+    if (!token) throw new Error('No authentication token');
+
+    try {
+      const response = await apiService.clearAllFamilyPoints(token);
+      
+      if (response.success) {
+        // Clear all points in local state immediately
+        setMembers(prev => prev.map(member => ({
+          ...member,
+          totalPoints: 0,
+          completedToday: 0
+        })));
+        return response;
+      } else {
+        throw new Error(response.message || 'Failed to clear all family points');
+      }
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Failed to clear all family points';
+      setError(error);
+      throw new Error(error);
+    }
+  };
 
   return {
     members,
@@ -137,6 +171,8 @@ export const useFamilyMembers = () => {
     addMember,
     updateMember,
     deleteMember,
+    clearMemberPoints,
+    clearAllFamilyPoints,
     refreshMembers: fetchMembers,
   };
 };

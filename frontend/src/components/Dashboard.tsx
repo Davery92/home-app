@@ -28,6 +28,8 @@ const Dashboard: React.FC = () => {
     addMember,
     updateMember,
     deleteMember,
+    clearMemberPoints,
+    clearAllFamilyPoints,
   } = useFamilyMembers()
 
   const {
@@ -126,6 +128,8 @@ const Dashboard: React.FC = () => {
         onAddMember={addMember}
         onUpdateMember={updateMember}
         onDeleteMember={deleteMember}
+        onClearMemberPoints={clearMemberPoints}
+        onClearAllPoints={clearAllFamilyPoints}
       />
     </div>
   )

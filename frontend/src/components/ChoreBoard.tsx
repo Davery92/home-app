@@ -51,6 +51,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
     updateChore,
     toggleChore,
     deleteChore,
+    clearCompletedChores,
     completedToday,
     totalChores,
     completionRate,
@@ -60,11 +61,14 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
     members: hookFamilyMembers,
     loading: hookMembersLoading,
     error: hookMembersError,
+    refreshMembers,
+    clearMemberPoints,
+    clearAllFamilyPoints,
   } = useFamilyMembers()
 
-  // Use props if provided, otherwise use hooks
-  const chores = propChores.length > 0 ? propChores : hookChores
-  const familyMembers = propFamilyMembers.length > 0 ? propFamilyMembers : hookFamilyMembers
+  // Always use hook data for real-time updates, fall back to props if hooks unavailable
+  const chores = hookChores.length > 0 || !propChores.length ? hookChores : propChores
+  const familyMembers = hookFamilyMembers.length > 0 || !propFamilyMembers.length ? hookFamilyMembers : propFamilyMembers
   const loading = propLoading || hookChoresLoading || hookMembersLoading
   const error = propError || hookChoresError || hookMembersError
 
@@ -85,10 +89,23 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
   const actualCompletionRate = actualTotalChores > 0 ? Math.round((actualCompletedToday / actualTotalChores) * 100) : 0
 
   const handleToggleChore = async (choreId: string) => {
+    console.log('Toggling chore:', choreId)
     try {
-      await toggleChore(choreId)
+      const result = await toggleChore(choreId)
+      console.log('Toggle result:', result)
+      
+      // Small delay to ensure backend has updated points
+      setTimeout(async () => {
+        // Refresh family members to update points after chore completion
+        if (refreshMembers) {
+          console.log('Refreshing members...')
+          await refreshMembers()
+          console.log('Members refreshed')
+        }
+      }, 500)
     } catch (error) {
       console.error('Failed to toggle chore:', error)
+      alert('Failed to toggle chore. Please try again.')
     }
   }
 
@@ -100,13 +117,21 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
         let assignedToId = newChore.assignedTo
         let assignedToType: 'user' | 'member' = 'member'
         
-        // If assignee starts with 'user-', it's a user account
-        if (newChore.assignedTo.startsWith('user-')) {
+        // Find the member to check if they have an account
+        const selectedMember = familyMembers.find(m => m.id === newChore.assignedTo)
+        if (selectedMember?.hasAccount) {
           assignedToType = 'user'
-          assignedToId = newChore.assignedTo.replace('user-', '')
         }
 
-        await addChore({
+        console.log('Creating chore:', {
+          title: newChore.title.trim(),
+          assignedTo: assignedToId,
+          assignedToType,
+          selectedMember: selectedMember?.name,
+          hasAccount: selectedMember?.hasAccount
+        })
+
+        const result = await addChore({
           title: newChore.title.trim(),
           points: newChore.points,
           assignedTo: assignedToId,
@@ -115,6 +140,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
           category: newChore.category,
         })
 
+        console.log('Chore added successfully:', result)
         setNewChore({ title: '', points: 1, assignedTo: '', assignedToType: 'member', priority: 'medium', category: 'other' })
         setShowAddChore(false)
       } catch (error) {
@@ -126,11 +152,49 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
 
   const handleDeleteChore = async (choreId: string) => {
     if (confirm('Are you sure you want to delete this chore?')) {
+      console.log('Deleting chore:', choreId)
       try {
-        await deleteChore(choreId)
+        const result = await deleteChore(choreId)
+        console.log('Delete result:', result)
       } catch (error) {
         console.error('Failed to delete chore:', error)
         alert('Failed to delete chore. Please try again.')
+      }
+    }
+  }
+
+  const handleClearCompleted = async () => {
+    const completedCount = chores.filter(chore => chore.isCompleted).length
+    if (completedCount === 0) {
+      alert('No completed chores to clear.')
+      return
+    }
+
+    if (confirm(`Are you sure you want to clear all ${completedCount} completed chore(s)? This will permanently delete them.`)) {
+      console.log('Clearing completed chores:', completedCount)
+      try {
+        const result = await clearCompletedChores()
+        console.log('Clear completed result:', result)
+        
+        // Refresh family members to update points after clearing
+        if (refreshMembers) {
+          await refreshMembers()
+        }
+      } catch (error) {
+        console.error('Failed to clear completed chores:', error)
+        alert('Failed to clear completed chores. Please try again.')
+      }
+    }
+  }
+
+  const handleClearAllPoints = async () => {
+    if (confirm('Clear ALL points for the entire family? This will reset all members\' total points and daily completed counts to zero.')) {
+      try {
+        await clearAllFamilyPoints()
+        console.log('All family points cleared successfully')
+      } catch (error) {
+        console.error('Failed to clear all family points:', error)
+        alert('Failed to clear all family points. Please try again.')
       }
     }
   }
@@ -161,21 +225,42 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
-          <div className="text-center">
-            <div className="flex items-center space-x-1">
-              <div className="text-green-500 text-lg">✅</div>
-              <span className="font-bold text-gray-700">{actualCompletedToday}</span>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <div className="text-center">
+              <div className="flex items-center space-x-1">
+                <div className="text-green-500 text-lg">✅</div>
+                <span className="font-bold text-gray-700">{actualCompletedToday}</span>
+              </div>
+              <p className="text-xs text-gray-500">Done</p>
             </div>
-            <p className="text-xs text-gray-500">Done</p>
+            <div className="text-gray-300">|</div>
+            <div className="text-center">
+              <div className="flex items-center space-x-1">
+                <div className="text-blue-500 text-lg">📝</div>
+                <span className="font-bold text-gray-700">{actualTotalChores}</span>
+              </div>
+              <p className="text-xs text-gray-500">Total</p>
+            </div>
           </div>
-          <div className="text-gray-300">|</div>
-          <div className="text-center">
-            <div className="flex items-center space-x-1">
-              <div className="text-blue-500 text-lg">📝</div>
-              <span className="font-bold text-gray-700">{actualTotalChores}</span>
-            </div>
-            <p className="text-xs text-gray-500">Total</p>
+          
+          <div className="flex items-center space-x-2">
+            {actualCompletedToday > 0 && (
+              <button
+                onClick={handleClearCompleted}
+                className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1.5 rounded-lg transition-colors duration-200 flex items-center space-x-1"
+              >
+                <span>🗑️</span>
+                <span>Clear Done</span>
+              </button>
+            )}
+            <button
+              onClick={handleClearAllPoints}
+              className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1.5 rounded-lg transition-colors duration-200 flex items-center space-x-1"
+            >
+              <span>🧹</span>
+              <span>Clear Points</span>
+            </button>
           </div>
         </div>
       </div>
@@ -186,7 +271,14 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
           <h4 className="text-sm font-semibold text-gray-600 mb-3">Family Members</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {familyMembers.map((member) => (
-              <div key={member.id} className={`bg-gradient-to-r ${member.color} rounded-xl p-3 text-white`}>
+              <div key={member.id} className={`bg-gradient-to-r ${member.color} rounded-xl p-3 text-white relative group`}>
+                <button
+                  onClick={() => clearMemberPoints(member.id)}
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/20 hover:bg-white/30 rounded-full p-1"
+                  title={`Clear ${member.name}'s points`}
+                >
+                  <span className="text-xs">🧹</span>
+                </button>
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl">{member.avatar}</span>
                   <div>
@@ -299,6 +391,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
                     </div>
                     
                     <button
+                      type="button"
                       onClick={() => handleToggleChore(chore.id)}
                       className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 ml-3 ${
                         chore.isCompleted 
@@ -338,7 +431,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
                     <option value="">Assign to...</option>
                     {familyMembers.map((member) => (
                       <option key={member.id} value={member.id}>
-                        {member.avatar} {member.name}
+                        {member.avatar} {member.name} {member.hasAccount ? '(Account)' : ''}
                       </option>
                     ))}
                   </select>
@@ -434,9 +527,10 @@ const ChoreEditForm: React.FC<{
         let assignedToId = assignedTo
         let assignedToType: 'user' | 'member' = 'member'
         
-        if (assignedTo.startsWith('user-')) {
+        // Find the member to check if they have an account
+        const selectedMember = familyMembers.find(m => m.id === assignedTo)
+        if (selectedMember?.hasAccount) {
           assignedToType = 'user'
-          assignedToId = assignedTo.replace('user-', '')
         }
 
         await onSave({ 
@@ -474,7 +568,7 @@ const ChoreEditForm: React.FC<{
           <option value="">Assign to...</option>
           {familyMembers.map((member) => (
             <option key={member.id} value={member.id}>
-              {member.avatar} {member.name}
+              {member.avatar} {member.name} {member.hasAccount ? '(Account)' : ''}
             </option>
           ))}
         </select>

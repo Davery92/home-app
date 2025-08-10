@@ -177,23 +177,39 @@ router.patch('/:choreId/toggle', authenticateToken, async (req, res) => {
     if (chore.isCompleted) {
       chore.markIncomplete();
       
-      // Remove points from assignee if it's a family member
+      // Remove points from assignee
       if (chore.assignedToMember) {
+        // Remove from family member (non-account holder)
         const member = await FamilyMember.findById(chore.assignedToMember);
         if (member) {
           member.removePoints(chore.points);
           await member.save();
         }
+      } else if (chore.assignedToUser) {
+        // Remove from user account
+        const assignedUser = await User.findById(chore.assignedToUser);
+        if (assignedUser) {
+          assignedUser.removePoints(chore.points);
+          await assignedUser.save();
+        }
       }
     } else {
       chore.markCompleted(user._id);
       
-      // Add points to assignee if it's a family member
+      // Add points to assignee
       if (chore.assignedToMember) {
+        // Add to family member (non-account holder)
         const member = await FamilyMember.findById(chore.assignedToMember);
         if (member) {
           member.addPoints(chore.points);
           await member.save();
+        }
+      } else if (chore.assignedToUser) {
+        // Add to user account
+        const assignedUser = await User.findById(chore.assignedToUser);
+        if (assignedUser) {
+          assignedUser.addPoints(chore.points);
+          await assignedUser.save();
         }
       }
     }
