@@ -11,6 +11,7 @@ import GroceryList from './GroceryList'
 import Header from './Header'
 import AIAssistant from './AIAssistant'
 import FamilyMembersModal from './FamilyMembersModal'
+import FamilySettingsModal from './FamilySettingsModal'
 import { useAuth } from '@/contexts/AuthContext'
 import { useFamilyMembers } from '@/hooks/useFamilyMembers'
 import { useChores } from '@/hooks/useChores'
@@ -18,6 +19,7 @@ import { useChores } from '@/hooks/useChores'
 const Dashboard: React.FC = () => {
   const [isAIOpen, setIsAIOpen] = useState(false)
   const [isMembersOpen, setIsMembersOpen] = useState(false)
+  const [isFamilySettingsOpen, setIsFamilySettingsOpen] = useState(false)
   const { user, token, family } = useAuth()
   
   // Use hooks for family members and chores management
@@ -43,7 +45,10 @@ const Dashboard: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Header onOpenMembers={() => setIsMembersOpen(true)} />
+      <Header 
+        onOpenMembers={() => setIsMembersOpen(true)} 
+        onOpenFamilySettings={() => setIsFamilySettingsOpen(true)}
+      />
       
       <div className="max-w-full mx-auto p-4 md:p-6 lg:p-8">
         <div className="grid grid-cols-1 2xl:grid-cols-12 gap-6">
@@ -130,6 +135,12 @@ const Dashboard: React.FC = () => {
         onDeleteMember={deleteMember}
         onClearMemberPoints={clearMemberPoints}
         onClearAllPoints={clearAllFamilyPoints}
+      />
+      
+      {/* Family Settings Modal */}
+      <FamilySettingsModal
+        isOpen={isFamilySettingsOpen}
+        onClose={() => setIsFamilySettingsOpen(false)}
       />
     </div>
   )

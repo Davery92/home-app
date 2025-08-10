@@ -5,9 +5,10 @@ import { useAuth } from '@/contexts/AuthContext'
 
 interface HeaderProps {
   onOpenMembers?: () => void
+  onOpenFamilySettings?: () => void
 }
 
-const Header: React.FC<HeaderProps> = ({ onOpenMembers }) => {
+const Header: React.FC<HeaderProps> = ({ onOpenMembers, onOpenFamilySettings }) => {
   const { user, family, logout } = useAuth()
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -105,8 +106,14 @@ const Header: React.FC<HeaderProps> = ({ onOpenMembers }) => {
                       <span>My Profile</span>
                     </button>
                     
-                    {family && (
-                      <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
+                    {family && onOpenFamilySettings && (
+                      <button 
+                        onClick={() => {
+                          onOpenFamilySettings()
+                          setShowProfileMenu(false)
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                      >
                         <span className="text-gray-400 text-lg">👥</span>
                         <span>Family Settings</span>
                       </button>
