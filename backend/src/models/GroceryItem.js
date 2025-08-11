@@ -171,13 +171,13 @@ groceryItemSchema.statics.getStats = async function(familyId) {
     this.countDocuments({ family: familyId, isActive: true, isPurchased: true }),
     this.distinct('category', { family: familyId, isActive: true, isPurchased: false }),
     this.aggregate([
-      { $match: { family: mongoose.Types.ObjectId(familyId), isActive: true, isPurchased: false } },
+      { $match: { family: new mongoose.Types.ObjectId(familyId), isActive: true, isPurchased: false } },
       { $group: { _id: null, total: { $sum: '$estimatedPrice' } } }
     ]),
     this.aggregate([
       { 
         $match: { 
-          family: mongoose.Types.ObjectId(familyId), 
+          family: new mongoose.Types.ObjectId(familyId), 
           isActive: true, 
           isPurchased: true,
           actualPrice: { $exists: true, $ne: null }

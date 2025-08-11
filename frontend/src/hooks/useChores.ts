@@ -117,7 +117,7 @@ export const useChores = () => {
         ? { 
             ...chore, 
             isCompleted: !chore.isCompleted, 
-            completedAt: !chore.isCompleted ? new Date().toISOString() : null 
+            completedAt: !chore.isCompleted ? new Date().toISOString() : undefined 
           }
         : chore
     ));

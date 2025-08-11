@@ -536,8 +536,7 @@ const ChoreEditForm: React.FC<{
         await onSave({ 
           title: title.trim(), 
           points, 
-          assignedTo: assignedToId,
-          assignedToType
+          assignedTo: assignedToId
         })
       } catch (error) {
         console.error('Failed to update chore:', error)

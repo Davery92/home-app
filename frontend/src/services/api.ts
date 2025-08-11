@@ -390,6 +390,176 @@ class ApiService {
     });
     return this.handleResponse(response);
   }
+
+  // Meals API
+  async getMealPlans(token: string, params?: {
+    startDate?: string;
+    endDate?: string;
+    mealType?: string;
+    status?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params?.startDate) queryParams.append('startDate', params.startDate);
+    if (params?.endDate) queryParams.append('endDate', params.endDate);
+    if (params?.mealType) queryParams.append('mealType', params.mealType);
+    if (params?.status) queryParams.append('status', params.status);
+
+    const response = await fetch(`${API_BASE_URL}/meals?${queryParams}`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async getTodaysMeals(token: string) {
+    const response = await fetch(`${API_BASE_URL}/meals/today`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async getFavoriteMeals(token: string) {
+    const response = await fetch(`${API_BASE_URL}/meals/favorites`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async generateAIMeal(token: string, mealData: {
+    prompt: string;
+    mealType: string;
+    servings?: number;
+    dietaryRestrictions?: string[];
+    cuisine?: string;
+    difficulty?: string;
+    maxTime?: number;
+    availableIngredients?: string;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/meals/ai-generate`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(mealData),
+    });
+    return this.handleResponse(response);
+  }
+
+  async generateAIWeeklyMeals(token: string, mealData: {
+    prompt: string;
+    servings?: number;
+    dietaryRestrictions?: string[];
+    cuisine?: string;
+    difficulty?: string;
+    maxTime?: number;
+    availableIngredients?: string;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/meals/ai-generate-weekly`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(mealData),
+    });
+    return this.handleResponse(response);
+  }
+
+  async createMealPlan(token: string, mealData: {
+    title: string;
+    description?: string;
+    mealType: string;
+    scheduledDate: string;
+    recipe: {
+      ingredients: Array<{
+        name: string;
+        amount: string;
+        unit?: string;
+        notes?: string;
+      }>;
+      instructions: Array<{
+        step: number;
+        instruction: string;
+        duration?: number;
+      }>;
+      prepTime?: number;
+      cookTime?: number;
+      servings?: number;
+      difficulty?: string;
+      cuisine?: string;
+      dietaryTags?: string[];
+      nutritionInfo?: any;
+    };
+    assignedTo?: string[];
+    notes?: string;
+    tags?: string[];
+    aiGenerated?: boolean;
+    aiPrompt?: string;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/meals`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(mealData),
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateMealPlan(token: string, mealId: string, updates: {
+    title?: string;
+    description?: string;
+    mealType?: string;
+    scheduledDate?: string;
+    recipe?: any;
+    notes?: string;
+    tags?: string[];
+  }) {
+    const response = await fetch(`${API_BASE_URL}/meals/${mealId}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(updates),
+    });
+    return this.handleResponse(response);
+  }
+
+  async completeMeal(token: string, mealId: string, rating?: number) {
+    const response = await fetch(`${API_BASE_URL}/meals/${mealId}/complete`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify({ rating }),
+    });
+    return this.handleResponse(response);
+  }
+
+  async toggleMealFavorite(token: string, mealId: string) {
+    const response = await fetch(`${API_BASE_URL}/meals/${mealId}/favorite`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteMealPlan(token: string, mealId: string) {
+    const response = await fetch(`${API_BASE_URL}/meals/${mealId}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async getMealStats(token: string) {
+    const response = await fetch(`${API_BASE_URL}/meals/stats`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async getMealShoppingList(token: string, params?: {
+    startDate?: string;
+    endDate?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (params?.startDate) queryParams.append('startDate', params.startDate);
+    if (params?.endDate) queryParams.append('endDate', params.endDate);
+
+    const response = await fetch(`${API_BASE_URL}/meals/shopping-list?${queryParams}`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
 }
 
 export const apiService = new ApiService();

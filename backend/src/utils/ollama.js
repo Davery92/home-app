@@ -186,7 +186,7 @@ Example format:
           max_tokens: 500
         }
       }, {
-        timeout: 5000, // Reduced timeout to 5 seconds
+        timeout: 60000, // Increased timeout to 60 seconds for complex generation
         headers: {
           'Content-Type': 'application/json'
         }
