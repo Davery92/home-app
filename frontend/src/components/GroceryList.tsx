@@ -15,9 +15,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
   const [formData, setFormData] = useState({
     name: '',
     quantity: 1,
-    unit: '',
     category: 'other',
-    priority: 'medium',
     notes: '',
     brand: '',
     store: '',
@@ -40,9 +38,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
       setFormData({
         name: '',
         quantity: 1,
-        unit: '',
         category: 'other',
-        priority: 'medium',
         notes: '',
         brand: '',
         store: '',
@@ -117,21 +113,6 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Unit
-                </label>
-                <input
-                  type="text"
-                  value={formData.unit}
-                  onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="lbs, oz, etc."
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Category
                 </label>
                 <select
@@ -144,21 +125,6 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
                       {option.emoji} {option.label}
                     </option>
                   ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Priority
-                </label>
-                <select
-                  value={formData.priority}
-                  onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
                 </select>
               </div>
             </div>

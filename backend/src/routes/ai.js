@@ -186,4 +186,139 @@ router.post('/grocery-list', authenticateToken, async (req, res) => {
   }
 });
 
+// AI price estimation endpoint
+router.post('/estimate-price', async (req, res) => {
+  try {
+    const { ingredient, amount } = req.body
+
+    if (!ingredient) {
+      return res.status(400).json({ error: 'Ingredient is required' })
+    }
+
+    // Try to get AI estimation using Ollama
+    let estimatedPrice = null
+    
+    try {
+      const prompt = `You are a grocery price estimation expert. Estimate the price in USD for this ingredient: "${amount} ${ingredient}".
+
+Consider:
+- Average US grocery store prices
+- The specific amount/quantity mentioned
+- Common package sizes
+- Current market conditions
+
+Respond ONLY with a single number representing the estimated price in dollars (e.g., "3.99"). Do not include currency symbol or explanation.
+
+Ingredient: ${amount} ${ingredient}`
+
+      const aiResponse = await generateOllamaResponse(prompt);
+
+      if (aiResponse) {
+        const priceText = aiResponse.trim()
+        const priceMatch = priceText.match(/(\d+\.?\d*)/)
+        
+        if (priceMatch) {
+          const price = parseFloat(priceMatch[1])
+          if (!isNaN(price) && price > 0 && price < 100) {
+            estimatedPrice = price
+          }
+        }
+      }
+    } catch (aiError) {
+      console.log('AI price estimation failed, using fallback:', aiError.message)
+    }
+
+    // Fallback price estimation if AI fails
+    if (!estimatedPrice) {
+      estimatedPrice = getFallbackPrice(ingredient, amount)
+    }
+
+    res.json({ 
+      estimatedPrice: Number(estimatedPrice.toFixed(2)),
+      source: estimatedPrice ? 'ai' : 'fallback'
+    })
+
+  } catch (error) {
+    console.error('Error estimating price:', error)
+    res.status(500).json({ error: 'Failed to estimate price' })
+  }
+})
+
+// Fallback price estimation
+function getFallbackPrice(ingredient, amount) {
+  const lowerIngredient = ingredient.toLowerCase()
+  
+  // Base prices for common ingredients (per typical serving/package)
+  const basePrices = {
+    // Proteins
+    'chicken': 7.99, 'beef': 9.99, 'pork': 6.99, 'fish': 8.99, 'salmon': 12.99,
+    'turkey': 5.99, 'lamb': 14.99, 'shrimp': 11.99, 'eggs': 4.49,
+    
+    // Dairy
+    'milk': 3.89, 'cheese': 5.99, 'butter': 4.99, 'yogurt': 5.49, 'cream': 3.99,
+    
+    // Grains & Starches
+    'rice': 2.99, 'pasta': 1.99, 'bread': 3.49, 'flour': 3.99, 'quinoa': 6.99,
+    'oats': 3.49, 'barley': 2.99, 'potato': 2.99, 'sweet potato': 3.99,
+    
+    // Vegetables
+    'onion': 1.99, 'garlic': 1.49, 'tomato': 3.49, 'carrot': 1.99, 'celery': 2.49,
+    'bell pepper': 4.99, 'broccoli': 2.99, 'spinach': 3.99, 'lettuce': 2.99,
+    'cucumber': 1.99, 'mushroom': 3.99, 'zucchini': 2.99, 'corn': 2.49,
+    
+    // Fruits
+    'apple': 4.99, 'banana': 1.99, 'orange': 4.49, 'lemon': 2.99, 'lime': 2.99,
+    'avocado': 6.99, 'berries': 5.99, 'strawberry': 4.99, 'grape': 4.99,
+    
+    // Pantry staples
+    'oil': 4.99, 'olive oil': 8.99, 'vinegar': 2.99, 'soy sauce': 3.99,
+    'salt': 1.49, 'pepper': 3.99, 'sugar': 2.99, 'honey': 5.99,
+    
+    // Herbs & Spices
+    'basil': 2.99, 'oregano': 2.49, 'thyme': 2.99, 'parsley': 1.99,
+    'cilantro': 1.99, 'rosemary': 2.99, 'sage': 2.99,
+    
+    // Canned/Packaged
+    'beans': 1.99, 'tomato sauce': 2.49, 'broth': 2.99, 'coconut milk': 2.99,
+    'stock': 3.49
+  }
+
+  // Find matching ingredient
+  let basePrice = 3.99 // default price
+  let matchFound = false
+
+  for (const [key, price] of Object.entries(basePrices)) {
+    if (lowerIngredient.includes(key)) {
+      basePrice = price
+      matchFound = true
+      break
+    }
+  }
+
+  // Adjust price based on amount if specified
+  if (amount && typeof amount === 'string') {
+    const amountLower = amount.toLowerCase()
+    
+    // Small amounts
+    if (amountLower.includes('tsp') || amountLower.includes('teaspoon') || 
+        amountLower.includes('tbsp') || amountLower.includes('tablespoon') ||
+        amountLower.includes('pinch') || amountLower.includes('dash')) {
+      basePrice *= 0.3 // Much smaller portion
+    }
+    // Large amounts
+    else if (amountLower.includes('lb') || amountLower.includes('pound') ||
+             amountLower.includes('kg') || amountLower.includes('bunch') ||
+             parseFloat(amount) >= 2) {
+      basePrice *= 1.5 // Larger portion
+    }
+    // Very large amounts
+    else if (parseFloat(amount) >= 5) {
+      basePrice *= 2.5
+    }
+  }
+
+  // Ensure reasonable price bounds
+  return Math.max(0.49, Math.min(basePrice, 49.99))
+}
+
 module.exports = router;

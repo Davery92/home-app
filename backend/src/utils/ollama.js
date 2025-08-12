@@ -50,7 +50,7 @@ Keep suggestions practical and achievable for home cooking.`;
           max_tokens: 500
         }
       }, {
-        timeout: 30000,
+        timeout: 90000, // Increased timeout to 90 seconds for meal generation
         headers: {
           'Content-Type': 'application/json'
         }

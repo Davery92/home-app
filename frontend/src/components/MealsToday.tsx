@@ -3,14 +3,16 @@
 import React, { useState } from 'react'
 import Card from './ui/Card'
 import { useMealPlan, MealPlan } from '@/hooks/useMealPlan'
+import ShoppingListModal from './ShoppingListModal'
 
 interface AIMealModalProps {
   isOpen: boolean
   onClose: () => void
   onGenerate: (mealData: any) => Promise<void>
+  favoriteMeals: any[]
 }
 
-const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate }) => {
+const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, favoriteMeals }) => {
   const [formData, setFormData] = useState({
     prompt: '',
     mealType: 'dinner',
@@ -72,9 +74,16 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate }
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-800">
-              🤖 Generate AI {formData.generationType === 'weekly' ? 'Weekly Meal Plan' : 'Meal'}
-            </h2>
+            <div>
+              <h2 className="text-xl font-bold text-gray-800">
+                🤖 Generate AI {formData.generationType === 'weekly' ? 'Weekly Meal Plan' : 'Meal'}
+              </h2>
+              {favoriteMeals.length >= 3 && (
+                <p className="text-sm text-purple-600 mt-1">
+                  🧠 Learning from your {favoriteMeals.length} favorite meals
+                </p>
+              )}
+            </div>
             <button 
               onClick={onClose}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -511,6 +520,7 @@ const MealModal: React.FC<MealModalProps> = ({
 const MealsToday: React.FC = () => {
   const { 
     todaysMeals, 
+    favoriteMeals,
     stats, 
     loading, 
     error, 
@@ -530,6 +540,9 @@ const MealsToday: React.FC = () => {
   const [showGeneratedModal, setShowGeneratedModal] = useState(false)
   const [showWeeklyModal, setShowWeeklyModal] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [showShoppingListModal, setShowShoppingListModal] = useState(false)
+  const [savedMealsForShopping, setSavedMealsForShopping] = useState<any[]>([])
+  const [mealView, setMealView] = useState<'today' | 'upcoming' | 'favorites'>('today')
 
   // Get upcoming meals for the week (next 7 days)
   const getUpcomingMeals = () => {
@@ -545,6 +558,90 @@ const MealsToday: React.FC = () => {
 
   const upcomingMeals = getUpcomingMeals()
 
+  // AI Learning System - analyze favorite meals to personalize recommendations
+  const analyzeFavoritePreferences = () => {
+    if (favoriteMeals.length === 0) return null
+
+    const preferences = {
+      cuisines: new Map<string, number>(),
+      ingredients: new Map<string, number>(),
+      mealTypes: new Map<string, number>(),
+      difficulties: new Map<string, number>(),
+      dietaryTags: new Map<string, number>()
+    }
+
+    favoriteMeals.forEach(meal => {
+      // Track cuisine preferences
+      if (meal.recipe?.cuisine) {
+        preferences.cuisines.set(meal.recipe.cuisine, (preferences.cuisines.get(meal.recipe.cuisine) || 0) + 1)
+      }
+      
+      // Track meal type preferences
+      preferences.mealTypes.set(meal.mealType, (preferences.mealTypes.get(meal.mealType) || 0) + 1)
+      
+      // Track difficulty preferences
+      if (meal.recipe?.difficulty) {
+        preferences.difficulties.set(meal.recipe.difficulty, (preferences.difficulties.get(meal.recipe.difficulty) || 0) + 1)
+      }
+      
+      // Track ingredient preferences
+      if (meal.recipe?.ingredients) {
+        meal.recipe.ingredients.forEach(ingredient => {
+          const name = ingredient.name.toLowerCase()
+          preferences.ingredients.set(name, (preferences.ingredients.get(name) || 0) + 1)
+        })
+      }
+      
+      // Track dietary tag preferences
+      if (meal.recipe?.dietaryTags) {
+        meal.recipe.dietaryTags.forEach(tag => {
+          preferences.dietaryTags.set(tag, (preferences.dietaryTags.get(tag) || 0) + 1)
+        })
+      }
+    })
+
+    // Get top preferences
+    const topCuisines = Array.from(preferences.cuisines.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3)
+    const topIngredients = Array.from(preferences.ingredients.entries()).sort((a, b) => b[1] - a[1]).slice(0, 8)
+    const topDifficulty = Array.from(preferences.difficulties.entries()).sort((a, b) => b[1] - a[1])[0]
+    const topDietaryTags = Array.from(preferences.dietaryTags.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3)
+
+    return {
+      cuisines: topCuisines.map(([cuisine]) => cuisine),
+      ingredients: topIngredients.map(([ingredient]) => ingredient),
+      difficulty: topDifficulty?.[0] || 'medium',
+      dietaryTags: topDietaryTags.map(([tag]) => tag)
+    }
+  }
+
+  // Get meals based on current view
+  const getDisplayMeals = () => {
+    switch (mealView) {
+      case 'today':
+        return todaysMeals
+      case 'upcoming':
+        return upcomingMeals
+      case 'favorites':
+        return favoriteMeals
+      default:
+        return todaysMeals
+    }
+  }
+
+  const displayMeals = getDisplayMeals()
+  const getViewTitle = () => {
+    switch (mealView) {
+      case 'today':
+        return "Today's Meals"
+      case 'upcoming':
+        return 'Upcoming Meals (7 days)'
+      case 'favorites':
+        return 'Favorite Meals'
+      default:
+        return "Today's Meals"
+    }
+  }
+
   const getMealTypeInfo = (mealType: string) => {
     const info = {
       breakfast: { emoji: '🍳', color: 'bg-yellow-100', textColor: 'text-yellow-800' },
@@ -558,19 +655,57 @@ const MealsToday: React.FC = () => {
 
   const handleGenerateAI = async (mealData: any) => {
     try {
+      console.log('Generating AI meal with data:', mealData)
+      
+      // Enhance prompts with learned preferences
+      const preferences = analyzeFavoritePreferences()
+      let enhancedMealData = { ...mealData }
+      
+      if (preferences && favoriteMeals.length >= 3) {
+        // Add personalization to the prompt
+        let personalizedPrompt = mealData.prompt
+        
+        if (preferences.cuisines.length > 0) {
+          personalizedPrompt += ` I particularly enjoy ${preferences.cuisines.join(' and ')} cuisine.`
+        }
+        
+        if (preferences.ingredients.length > 0) {
+          const topIngredients = preferences.ingredients.slice(0, 4).join(', ')
+          personalizedPrompt += ` I often enjoy meals with ingredients like ${topIngredients}.`
+        }
+        
+        if (preferences.dietaryTags.length > 0) {
+          personalizedPrompt += ` My preferred meal styles are ${preferences.dietaryTags.join(', ')}.`
+        }
+        
+        // Set learned difficulty preference if not specified
+        if (!mealData.difficulty || mealData.difficulty === 'medium') {
+          enhancedMealData.difficulty = preferences.difficulty
+        }
+        
+        enhancedMealData.prompt = personalizedPrompt
+        console.log('Enhanced prompt with preferences:', personalizedPrompt)
+      }
+      
       if (mealData.generationType === 'weekly') {
-        const { generationType, mealType, ...weeklyData } = mealData;
+        const { generationType, mealType, ...weeklyData } = enhancedMealData;
+        console.log('Generating weekly meals with:', weeklyData)
         const meals = await generateAIWeeklyMeals(weeklyData);
+        console.log('Weekly meals generated:', meals)
         setGeneratedWeeklyMeals(meals);
         setShowWeeklyModal(true);
       } else {
-        const { generationType, ...singleMealData } = mealData;
+        const { generationType, ...singleMealData } = enhancedMealData;
+        console.log('Generating single meal with:', singleMealData)
         const meal = await generateAIMeal(singleMealData);
+        console.log('Single meal generated:', meal)
         setGeneratedMeal(meal);
         setShowGeneratedModal(true);
       }
     } catch (err) {
       console.error('Failed to generate AI meal:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
+      alert(`Failed to generate meal: ${errorMessage}`)
     }
   }
 
@@ -585,6 +720,11 @@ const MealsToday: React.FC = () => {
         scheduledDate: today
       })
       setShowGeneratedModal(false)
+      
+      // Show shopping list modal with the saved meal
+      setSavedMealsForShopping([generatedMeal])
+      setShowShoppingListModal(true)
+      
       setGeneratedMeal(null)
     } catch (err) {
       console.error('Failed to save meal:', err)
@@ -609,8 +749,12 @@ const MealsToday: React.FC = () => {
       
       await Promise.all(promises);
       setShowWeeklyModal(false);
+      
+      // Show shopping list modal with all saved meals
+      setSavedMealsForShopping(generatedWeeklyMeals)
+      setShowShoppingListModal(true)
+      
       setGeneratedWeeklyMeals([]);
-      alert('Weekly meal plan saved successfully!');
     } catch (err) {
       console.error('Failed to save weekly meals:', err);
       alert('Failed to save weekly meal plan');
@@ -642,14 +786,25 @@ const MealsToday: React.FC = () => {
                     <span className="text-white text-2xl">🍽️</span>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-800">Meals & Weekly Plan</h3>
+                    <h3 className="text-2xl font-bold text-gray-800">{getViewTitle()}</h3>
                     <p className="text-gray-500">
-                      {todaysMeals.length} today • {upcomingMeals.length} this week
+                      {displayMeals.length} meals • {favoriteMeals.length} favorites
                     </p>
                   </div>
                 </div>
-                
-                <div className="flex items-center space-x-2">
+
+                {/* View Filter Dropdown */}
+                <div className="flex items-center space-x-3">
+                  <select
+                    value={mealView}
+                    onChange={(e) => setMealView(e.target.value as 'today' | 'upcoming' | 'favorites')}
+                    className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+                  >
+                    <option value="today">🍽️ Today's Meals</option>
+                    <option value="upcoming">📅 Upcoming (7 days)</option>
+                    <option value="favorites">⭐ Favorites ({favoriteMeals.length})</option>
+                  </select>
+                  
                   <button
                     onClick={() => setShowAIModal(true)}
                     className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex items-center space-x-2"
@@ -686,7 +841,7 @@ const MealsToday: React.FC = () => {
                     </h4>
                     <div className="space-y-4">
                       {todaysMeals.length > 0 ? (
-                        todaysMeals.map((meal) => {
+                        displayMeals.map((meal) => {
                           const typeInfo = getMealTypeInfo(meal.mealType)
                           return (
                             <div 
@@ -978,6 +1133,7 @@ const MealsToday: React.FC = () => {
         isOpen={showAIModal}
         onClose={() => setShowAIModal(false)}
         onGenerate={handleGenerateAI}
+        favoriteMeals={favoriteMeals}
       />
 
       {/* Generated Meal Preview Modal */}
@@ -1103,6 +1259,13 @@ const MealsToday: React.FC = () => {
           </Card>
         </div>
       )}
+
+      {/* Shopping List Modal */}
+      <ShoppingListModal
+        isOpen={showShoppingListModal}
+        onClose={() => setShowShoppingListModal(false)}
+        meals={savedMealsForShopping}
+      />
     </>
   )
 }
