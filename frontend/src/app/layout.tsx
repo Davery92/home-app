@@ -15,6 +15,7 @@ export const viewport: Viewport = {
 }
 
 import { AuthProvider } from '@/contexts/AuthContext'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 
 export default function RootLayout({
   children,
@@ -29,11 +30,13 @@ export default function RootLayout({
           rel="stylesheet" 
         />
       </head>
-      <body className="bg-gray-100 min-h-screen">
-        <AuthProvider>
-          <div id="root">{children}</div>
-          <div id="modal-root"></div>
-        </AuthProvider>
+      <body className="bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors">
+        <ThemeProvider>
+          <AuthProvider>
+            <div id="root">{children}</div>
+            <div id="modal-root"></div>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

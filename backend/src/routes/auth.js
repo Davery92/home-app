@@ -62,22 +62,33 @@ router.post('/login', [
   body('password').exists()
 ], async (req, res) => {
   try {
+    console.log('🔐 Login attempt received:', { email: req.body.email, timestamp: new Date().toISOString() });
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Validation errors:', errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
     const { email, password } = req.body;
+    console.log('🔍 Searching for user:', email);
 
     // Find user and include password for comparison
     const user = await User.findOne({ email }).select('+password');
+    console.log('👤 User found:', user ? `Yes (ID: ${user._id}, Active: ${user.isActive})` : 'No');
+    
     if (!user || !user.isActive) {
+      console.log('❌ Login failed: User not found or inactive');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Check password
+    console.log('🔑 Checking password...');
     const isPasswordValid = await user.comparePassword(password);
+    console.log('🔑 Password valid:', isPasswordValid);
+    
     if (!isPasswordValid) {
+      console.log('❌ Login failed: Invalid password');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
@@ -98,6 +109,8 @@ router.post('/login', [
       familyInfo = await Family.findById(user.familyId).select('name memberCount');
     }
 
+    console.log('✅ Login successful for user:', user.email);
+    
     res.json({
       message: 'Login successful',
       token,

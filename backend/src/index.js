@@ -18,6 +18,7 @@ const reminderRoutes = require('./routes/reminders');
 const personalReminderRoutes = require('./routes/personalReminders');
 const cleaningRoutes = require('./routes/cleaning');
 const petRoutes = require('./routes/pets');
+const giftTrackingRoutes = require('./routes/giftTracking');
 const aiRoutes = require('./routes/ai');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -31,8 +32,8 @@ connectDB();
 app.use(helmet());
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL 
-    : ['http://localhost:3000', 'http://10.185.1.174:3000'],
+    ? [process.env.FRONTEND_URL, 'https://kinnect.avery.cloud', 'http://kinnect.avery.cloud']
+    : ['http://localhost:3000', 'http://10.185.1.174:3000', 'https://kinnect.avery.cloud', 'http://kinnect.avery.cloud'],
   credentials: true
 }));
 
@@ -67,6 +68,7 @@ app.use('/api/reminders', reminderRoutes);
 app.use('/api/personal-reminders', personalReminderRoutes);
 app.use('/api/cleaning', cleaningRoutes);
 app.use('/api/pets', petRoutes);
+app.use('/api/gift-tracking', giftTrackingRoutes);
 app.use('/api/ai', aiRoutes);
 
 // Error handling

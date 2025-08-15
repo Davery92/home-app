@@ -68,22 +68,22 @@ export default function HomePage() {
 
   // Show welcome screen while modals handle authentication
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 flex items-center justify-center">
       <div className="text-center">
         <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-6 w-fit mx-auto mb-8">
           <div className="text-white text-6xl">🏠</div>
         </div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-4">
           Welcome to Home App
         </h1>
-        <p className="text-xl text-gray-600 mb-8 max-w-md mx-auto">
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">
           Your family's digital headquarters for organizing life together.
         </p>
         <div className="animate-pulse">
-          <div className="inline-flex items-center space-x-2 text-blue-600">
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          <div className="inline-flex items-center space-x-2 text-blue-600 dark:text-blue-400">
+            <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
           </div>
         </div>
       </div>

@@ -180,7 +180,12 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
   )
 }
 
-const GroceryList: React.FC = () => {
+interface GroceryListProps {
+  showAddModalProp?: boolean
+  onCloseAddModal?: () => void
+}
+
+const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddModal }) => {
   const { 
     activeItems, 
     purchasedItems, 
@@ -194,6 +199,13 @@ const GroceryList: React.FC = () => {
     clearPurchasedItems 
   } = useGrocery()
   const [showAddModal, setShowAddModal] = useState(false)
+  
+  // Use prop value if provided
+  React.useEffect(() => {
+    if (showAddModalProp !== undefined) {
+      setShowAddModal(showAddModalProp)
+    }
+  }, [showAddModalProp])
   const [showPurchased, setShowPurchased] = useState(false)
 
   const getCategoryEmoji = (category: string) => {
@@ -455,7 +467,10 @@ const GroceryList: React.FC = () => {
       {/* Add Item Modal */}
       <AddItemModal
         isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        onClose={() => {
+          setShowAddModal(false)
+          onCloseAddModal?.()
+        }}
         onAdd={handleAddItem}
       />
     </>

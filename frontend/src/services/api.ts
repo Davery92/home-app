@@ -1,8 +1,10 @@
 // API Service Layer for Frontend-Backend Communication
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.NEXT_PUBLIC_API_URL 
-  : `${typeof window !== 'undefined' ? window.location.protocol : 'http:'}//${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:3001/api`;
+  ? process.env.NEXT_PUBLIC_API_URL || 'http://10.185.1.174:3001/api'
+  : (typeof window !== 'undefined' && (window.location.hostname === 'kinnect.avery.cloud' || window.location.hostname.includes('avery.cloud')))
+    ? 'http://10.185.1.174:3001/api'
+    : `${typeof window !== 'undefined' ? window.location.protocol : 'http:'}//${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:3001/api`;
 
 class ApiService {
   private getAuthHeaders(token?: string): HeadersInit {
@@ -1004,6 +1006,201 @@ class ApiService {
 
   async getVaccineStats(token: string) {
     const response = await fetch(`${API_BASE_URL}/pets/vaccines/stats`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  // ===== GIFT TRACKING =====
+
+  // Dashboard
+  async getGiftDashboard(token: string) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/dashboard`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  // Gift Events
+  async getGiftEvents(token: string, includeArchived = false) {
+    const queryParams = new URLSearchParams();
+    if (includeArchived) queryParams.append('includeArchived', 'true');
+
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/events?${queryParams}`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async getGiftEvent(token: string, eventId: string) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/events/${eventId}`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async createGiftEvent(token: string, eventData: {
+    title: string;
+    description?: string;
+    eventDate?: string;
+    totalBudget?: number;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/events`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(eventData),
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateGiftEvent(token: string, eventId: string, updates: {
+    title?: string;
+    description?: string;
+    eventDate?: string;
+    totalBudget?: number;
+    status?: string;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/events/${eventId}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(updates),
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteGiftEvent(token: string, eventId: string) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/events/${eventId}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  // Gift Recipients
+  async getGiftRecipients(token: string, eventId: string) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/events/${eventId}/recipients`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async createGiftRecipient(token: string, eventId: string, recipientData: {
+    name: string;
+    group?: string;
+    budget?: number;
+    notes?: string;
+    avatar?: string;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/events/${eventId}/recipients`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(recipientData),
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateGiftRecipient(token: string, recipientId: string, updates: {
+    name?: string;
+    group?: string;
+    budget?: number;
+    notes?: string;
+    avatar?: string;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/recipients/${recipientId}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(updates),
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteGiftRecipient(token: string, recipientId: string) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/recipients/${recipientId}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  // Gift Items
+  async getGiftItems(token: string, recipientId: string, filters?: {
+    type?: 'idea' | 'purchase';
+    status?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (filters?.type) queryParams.append('type', filters.type);
+    if (filters?.status) queryParams.append('status', filters.status);
+
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/recipients/${recipientId}/items?${queryParams}`, {
+      headers: this.getAuthHeaders(token),
+    });
+    return this.handleResponse(response);
+  }
+
+  async createGiftItem(token: string, recipientId: string, itemData: {
+    name: string;
+    description?: string;
+    estimatedPrice?: number;
+    actualPrice?: number;
+    url?: string;
+    type?: 'idea' | 'purchase';
+    status?: string;
+    priority?: string;
+    category?: string;
+    store?: string;
+    notes?: string;
+    imageUrl?: string;
+    purchaseDate?: string;
+    orderNumber?: string;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/recipients/${recipientId}/items`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(itemData),
+    });
+    return this.handleResponse(response);
+  }
+
+  async updateGiftItem(token: string, itemId: string, updates: {
+    name?: string;
+    description?: string;
+    estimatedPrice?: number;
+    actualPrice?: number;
+    url?: string;
+    status?: string;
+    priority?: string;
+    category?: string;
+    store?: string;
+    notes?: string;
+    imageUrl?: string;
+    purchaseDate?: string;
+    orderNumber?: string;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/items/${itemId}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(updates),
+    });
+    return this.handleResponse(response);
+  }
+
+  async moveGiftItemToPurchase(token: string, itemId: string, purchaseData: {
+    actualPrice?: number;
+    purchaseDate?: string;
+    orderNumber?: string;
+    store?: string;
+  }) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/items/${itemId}/move-to-purchase`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(token),
+      body: JSON.stringify(purchaseData),
+    });
+    return this.handleResponse(response);
+  }
+
+  async deleteGiftItem(token: string, itemId: string) {
+    const response = await fetch(`${API_BASE_URL}/gift-tracking/items/${itemId}`, {
+      method: 'DELETE',
       headers: this.getAuthHeaders(token),
     });
     return this.handleResponse(response);

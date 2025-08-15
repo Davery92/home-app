@@ -207,18 +207,18 @@ const ShoppingListModal: React.FC<ShoppingListModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Shopping List</h2>
-            <p className="text-gray-600 mt-1">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Shopping List</h2>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
               Ingredients needed for {meals.length} meal{meals.length !== 1 ? 's' : ''}
             </p>
           </div>
           <button 
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
           >
             ×
           </button>
@@ -229,7 +229,7 @@ const ShoppingListModal: React.FC<ShoppingListModalProps> = ({
           {isLoading ? (
             <div className="text-center py-8">
               <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-gray-600">Analyzing ingredients and estimating prices...</p>
+              <p className="text-gray-600 dark:text-gray-400">Analyzing ingredients and estimating prices...</p>
             </div>
           ) : (
             <>
@@ -266,7 +266,7 @@ const ShoppingListModal: React.FC<ShoppingListModalProps> = ({
                     />
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
-                        <span className={`font-medium ${ingredient.alreadyHave ? 'text-green-700 line-through' : 'text-gray-800'}`}>
+                        <span className={`font-medium ${ingredient.alreadyHave ? 'text-green-700 dark:text-green-400 line-through' : 'text-gray-800 dark:text-gray-200'}`}>
                           {ingredient.amount} {ingredient.name}
                         </span>
                       </div>
@@ -284,10 +284,10 @@ const ShoppingListModal: React.FC<ShoppingListModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-200 flex space-x-3">
+        <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex space-x-3">
           <button
             onClick={onClose}
-            className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+            className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
             Cancel
           </button>

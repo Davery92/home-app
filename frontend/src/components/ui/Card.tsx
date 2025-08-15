@@ -19,10 +19,10 @@ const Card: React.FC<CardProps> = ({
   return (
     <div
       className={cn(
-        'rounded-3xl shadow-lg transition-all duration-300',
+        'rounded-3xl shadow-lg transition-all duration-300 border border-white/20 dark:border-gray-700/50',
         gradient 
-          ? 'bg-gradient-to-br from-white to-gray-50' 
-          : 'bg-white',
+          ? 'bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900' 
+          : 'bg-white dark:bg-gray-800',
         hover && 'hover:shadow-xl hover:scale-[1.02]',
         className
       )}

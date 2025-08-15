@@ -152,8 +152,8 @@ const FamilySettingsModal: React.FC<FamilySettingsModalProps> = ({ isOpen, onClo
             <span className="text-white text-2xl">🏠</span>
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-800">{family?.name}</h3>
-            <p className="text-sm text-gray-600">{family?.description || 'No description'}</p>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white">{family?.name}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{family?.description || 'No description'}</p>
           </div>
         </div>
         

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import Clock from './Clock'
 import Weather from './Weather'
 import QuickActions from './QuickActions'
@@ -16,6 +16,7 @@ import PersonalTodos from './PersonalTodos'
 import CleaningSchedule from './CleaningSchedule'
 import PersonalReminders from './PersonalReminders'
 import PetCare from './PetCare'
+import GiftTracker from './GiftTracker'
 import { useAuth } from '@/contexts/AuthContext'
 import { useFamilyMembers } from '@/hooks/useFamilyMembers'
 import { useChores } from '@/hooks/useChores'
@@ -24,8 +25,12 @@ const Dashboard: React.FC = () => {
   const [isAIOpen, setIsAIOpen] = useState(false)
   const [isMembersOpen, setIsMembersOpen] = useState(false)
   const [isFamilySettingsOpen, setIsFamilySettingsOpen] = useState(false)
-  const [currentView, setCurrentView] = useState<'home' | 'todos' | 'cleaning' | 'reminders' | 'petcare'>('home')
+  const [currentView, setCurrentView] = useState<'home' | 'todos' | 'cleaning' | 'reminders' | 'petcare' | 'gifts'>('home')
   const { user, token, family } = useAuth()
+  
+  // States for quick access
+  const [showGroceryModal, setShowGroceryModal] = useState(false)
+  const [showMealPlanningModal, setShowMealPlanningModal] = useState(false)
   
   // Use hooks for family members and chores management
   const {
@@ -47,24 +52,38 @@ const Dashboard: React.FC = () => {
     totalChores,
     completionRate,
   } = useChores()
+
+  // Quick access handlers
+  const handleGroceryQuickAccess = () => {
+    setCurrentView('home') // Navigate to home first
+    setShowGroceryModal(true) // Open the grocery add modal
+  }
+
+  const handleMealPlanningQuickAccess = () => {
+    setCurrentView('home') // Navigate to home first
+    setShowMealPlanningModal(true) // Open the meal planning modal
+  }
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900">
       <Header 
         onOpenMembers={() => setIsMembersOpen(true)} 
         onOpenFamilySettings={() => setIsFamilySettingsOpen(true)}
+        onOpenGrocery={handleGroceryQuickAccess}
+        onOpenMealPlanning={handleMealPlanningQuickAccess}
       />
 
       {/* Navigation Tabs */}
       <div className="max-w-full mx-auto px-4 md:px-6 lg:px-8 pt-4">
-        <div className="bg-white/70 backdrop-blur-sm rounded-xl p-1 shadow-sm border border-white/20 mb-4">
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-1 shadow-sm border border-white/20 dark:border-gray-700/30 mb-4">
           <div className="flex space-x-1">
             {[
               { key: 'home', label: '🏠 Home', icon: '🏠' },
               { key: 'todos', label: '📝 Personal To Dos', icon: '📝' },
               { key: 'cleaning', label: '🧹 Cleaning Schedule', icon: '🧹' },
               { key: 'reminders', label: '⏰ Reminders', icon: '⏰' },
-              { key: 'petcare', label: '🐾 Pet Care', icon: '🐾' }
+              { key: 'petcare', label: '🐾 Pet Care', icon: '🐾' },
+              { key: 'gifts', label: '🎁 Gift Tracker', icon: '🎁' }
             ].map(tab => (
               <button
                 key={tab.key}
@@ -72,7 +91,7 @@ const Dashboard: React.FC = () => {
                 className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg transition-all font-medium ${
                   currentView === tab.key
                     ? 'bg-blue-500 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-white/50 hover:text-gray-800'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:text-gray-800 dark:hover:text-gray-100'
                 }`}
               >
                 <span className="text-lg">{tab.icon}</span>
@@ -117,13 +136,19 @@ const Dashboard: React.FC = () => {
 
               {/* Meals and Grocery Row - moved from left column */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <MealsToday />
-                <GroceryList />
+                <MealsToday 
+                  showAIModalProp={showMealPlanningModal}
+                  onCloseAIModal={() => setShowMealPlanningModal(false)}
+                />
+                <GroceryList 
+                  showAddModalProp={showGroceryModal}
+                  onCloseAddModal={() => setShowGroceryModal(false)}
+                />
               </div>
 
               {/* Family Stats */}
-              <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/20">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Family Stats</h3>
+              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/20 dark:border-gray-700/30">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Family Stats</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-2xl p-4 text-white">
                     <div className="text-2xl font-bold">
@@ -166,6 +191,13 @@ const Dashboard: React.FC = () => {
         {currentView === 'petcare' && (
           <div className="max-w-7xl mx-auto">
             <PetCare />
+          </div>
+        )}
+
+        {/* Gift Tracker View */}
+        {currentView === 'gifts' && (
+          <div className="max-w-6xl mx-auto">
+            <GiftTracker />
           </div>
         )}
       </div>

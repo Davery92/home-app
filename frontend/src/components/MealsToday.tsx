@@ -517,7 +517,12 @@ const MealModal: React.FC<MealModalProps> = ({
   )
 }
 
-const MealsToday: React.FC = () => {
+interface MealsTodayProps {
+  showAIModalProp?: boolean
+  onCloseAIModal?: () => void
+}
+
+const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal }) => {
   const { 
     todaysMeals, 
     favoriteMeals,
@@ -534,6 +539,13 @@ const MealsToday: React.FC = () => {
     getMealsByDateRange 
   } = useMealPlan()
   const [showAIModal, setShowAIModal] = useState(false)
+  
+  // Use prop value if provided
+  React.useEffect(() => {
+    if (showAIModalProp !== undefined) {
+      setShowAIModal(showAIModalProp)
+    }
+  }, [showAIModalProp])
   const [selectedMeal, setSelectedMeal] = useState<MealPlan | null>(null)
   const [generatedMeal, setGeneratedMeal] = useState<any>(null)
   const [generatedWeeklyMeals, setGeneratedWeeklyMeals] = useState<any[]>([])
@@ -1131,7 +1143,10 @@ const MealsToday: React.FC = () => {
       {/* AI Generation Modal */}
       <AIMealModal
         isOpen={showAIModal}
-        onClose={() => setShowAIModal(false)}
+        onClose={() => {
+          setShowAIModal(false)
+          onCloseAIModal?.()
+        }}
         onGenerate={handleGenerateAI}
         favoriteMeals={favoriteMeals}
       />

@@ -164,7 +164,7 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-white flex flex-col">
+      <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-white dark:bg-gray-800 flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -172,8 +172,8 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
               <span className="text-white text-xl">👥</span>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-800">Family Members</h2>
-              <p className="text-sm text-gray-500">Manage your family's members and chore assignments</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Family Members</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Manage your family's members and chore assignments</p>
             </div>
           </div>
           
@@ -181,7 +181,7 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
             onClick={onClose}
             className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
           >
-            <span className="text-gray-400 hover:text-gray-600 text-2xl">×</span>
+            <span className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-2xl">×</span>
           </button>
         </div>
 
@@ -190,7 +190,7 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
           {/* Account Holders Section */}
           {accountHolders.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center space-x-2">
                 <span className="text-green-500">🔐</span>
                 <span>Account Holders</span>
               </h3>
@@ -220,7 +220,7 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
           {/* Editable Members Section */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800 flex items-center space-x-2">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center space-x-2">
                 <span className="text-blue-500">✏️</span>
                 <span>Editable Members</span>
               </h3>
@@ -235,7 +235,7 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
 
             {editableMembers.length === 0 ? (
               <div className="text-center py-8 bg-gray-50 rounded-xl">
-                <p className="text-gray-500 mb-4">No editable family members yet.</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">No editable family members yet.</p>
                 <button
                   onClick={() => setShowAddForm(true)}
                   className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200"
@@ -303,7 +303,7 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex items-center justify-between text-sm text-gray-600">
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
             <p>
               <strong>{members.length}</strong> total members • 
               <strong className="text-green-600 ml-1">{accountHolders.length}</strong> with accounts • 
@@ -311,7 +311,7 @@ const FamilyMembersModal: React.FC<FamilyMembersModalProps> = ({
             </p>
             <button
               onClick={onClose}
-              className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-200"
+              className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
             >
               Close
             </button>
@@ -346,7 +346,7 @@ const EditMemberForm: React.FC<{
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full px-2 py-1 text-sm bg-white/90 border border-white/30 rounded text-gray-800"
+        className="w-full px-2 py-1 text-sm bg-white/90 dark:bg-gray-700/90 border border-white/30 dark:border-gray-600 rounded text-gray-800 dark:text-white"
         placeholder="Name"
         autoFocus
       />

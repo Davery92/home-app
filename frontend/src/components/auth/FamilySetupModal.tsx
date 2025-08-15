@@ -105,8 +105,8 @@ const FamilySetupModal: React.FC<FamilySetupModalProps> = ({
       <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-6 w-fit mx-auto mb-6 shadow-lg">
         <div className="text-white text-4xl">🏠</div>
       </div>
-      <h2 className="text-3xl font-bold text-gray-800 mb-3">Welcome to Your Family Hub</h2>
-      <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-3">Welcome to Your Family Hub</h2>
+      <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg leading-relaxed">
         Get started by creating your family dashboard or joining an existing one.
       </p>
 
