@@ -372,16 +372,16 @@ const FamilySettingsModal: React.FC<FamilySettingsModalProps> = ({ isOpen, onClo
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-white flex flex-col">
+      <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">
             <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-2">
               <span className="text-white text-xl">🏠</span>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-800">Family Settings</h2>
-              <p className="text-sm text-gray-500">Manage your family dashboard</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Family Settings</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Manage your family dashboard</p>
             </div>
           </div>
           

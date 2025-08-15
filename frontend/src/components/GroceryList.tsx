@@ -71,10 +71,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white">
+      <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-800">Add Grocery Item</h2>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Add Grocery Item</h2>
             <button 
               onClick={onClose}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -284,7 +284,7 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
 
   if (error) {
     return (
-      <Card className="p-6 bg-gradient-to-br from-white/90 to-red-50/90 backdrop-blur-sm border border-white/20">
+      <Card className="p-6" gradient={true}>
         <div className="text-center">
           <div className="text-red-500 text-4xl mb-4">❌</div>
           <h3 className="text-lg font-bold text-gray-800 mb-2">Failed to Load Grocery List</h3>
@@ -296,7 +296,7 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
 
   return (
     <>
-      <Card className="p-6 bg-gradient-to-br from-white/90 to-green-50/90 backdrop-blur-sm border border-white/20">
+      <Card className="p-6" gradient={true}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">

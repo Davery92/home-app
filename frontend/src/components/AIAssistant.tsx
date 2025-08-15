@@ -127,38 +127,38 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, userToken, f
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-4xl h-[80vh] bg-white flex flex-col relative">
+      <Card className="w-full max-w-4xl h-[80vh] flex flex-col relative">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">
             <div className="bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl p-2">
               <div className="text-white text-xl">🤖</div>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-800">AI Family Assistant</h2>
-              <p className="text-sm text-gray-500">Powered by Ollama</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">AI Family Assistant</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Powered by Ollama</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
           >
-            <div className="text-gray-400 hover:text-gray-600 text-2xl">×</div>
+            <div className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-2xl">×</div>
           </button>
         </div>
 
         {/* Quick Actions */}
-        <div className="px-6 py-3 border-b border-gray-100">
+        <div className="px-6 py-3 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center space-x-2 overflow-x-auto">
-            <span className="text-xs text-gray-500 font-medium mr-2">Quick:</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium mr-2">Quick:</span>
             {quickActions.map((action, index) => (
               <button
                 key={index}
                 onClick={() => handleQuickAction(action.prompt)}
-                className="flex items-center space-x-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm whitespace-nowrap transition-colors duration-200"
+                className="flex items-center space-x-1 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full text-sm whitespace-nowrap transition-colors duration-200"
               >
                 <span>{action.icon}</span>
-                <span className="text-gray-700">{action.text}</span>
+                <span className="text-gray-700 dark:text-gray-300">{action.text}</span>
               </button>
             ))}
           </div>
@@ -175,12 +175,12 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, userToken, f
                 className={`max-w-[70%] rounded-2xl px-4 py-3 ${
                   message.role === 'user'
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
-                    : 'bg-gray-100 text-gray-800'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
                 }`}
               >
                 <p className="whitespace-pre-wrap">{message.content}</p>
                 <p className={`text-xs mt-1 ${
-                  message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                  message.role === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
                 }`}>
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
@@ -189,7 +189,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, userToken, f
           ))}
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-gray-100 rounded-2xl px-4 py-3">
+              <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl px-4 py-3">
                 <div className="flex space-x-2">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -202,7 +202,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, userToken, f
         </div>
 
         {/* Input */}
-        <div className="p-6 border-t border-gray-200">
+        <div className="p-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-end space-x-3">
             <div className="flex-1 relative">
               <textarea
@@ -211,7 +211,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, userToken, f
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything about meal planning, recipes, or family organization..."
-                className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none transition-all duration-200"
+                className="w-full px-4 py-3 pr-12 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none transition-all duration-200"
                 rows={1}
                 style={{ minHeight: '48px', maxHeight: '120px' }}
                 onInput={(e) => {
@@ -221,7 +221,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, userToken, f
                 }}
                 disabled={isLoading}
               />
-              <div className="absolute right-3 bottom-3 text-xs text-gray-400">
+              <div className="absolute right-3 bottom-3 text-xs text-gray-400 dark:text-gray-500">
                 {input.length > 0 && `${input.length}/1000`}
               </div>
             </div>
@@ -237,7 +237,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, userToken, f
               )}
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-2 text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
             Press Enter to send, Shift+Enter for new line
           </p>
         </div>

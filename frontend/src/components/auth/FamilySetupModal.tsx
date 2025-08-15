@@ -131,15 +131,15 @@ const FamilySetupModal: React.FC<FamilySetupModalProps> = ({
         
         <button
           onClick={() => setMode('join')}
-          className="group w-full bg-white border-2 border-gray-200 text-gray-700 py-6 px-6 rounded-2xl font-semibold hover:border-indigo-300 hover:bg-indigo-50 hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-between"
+          className="group w-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-6 px-6 rounded-2xl font-semibold hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-between"
         >
           <div className="flex items-center space-x-4">
-            <div className="bg-indigo-100 p-3 rounded-xl">
-              <div className="text-indigo-600 text-2xl">👥</div>
+            <div className="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-xl">
+              <div className="text-indigo-600 dark:text-indigo-400 text-2xl">👥</div>
             </div>
             <div className="text-left">
-              <div className="text-xl font-bold text-gray-800">Join Existing Family</div>
-              <div className="text-gray-500 text-sm">Use an invite code to join</div>
+              <div className="text-xl font-bold text-gray-800 dark:text-white">Join Existing Family</div>
+              <div className="text-gray-500 dark:text-gray-400 text-sm">Use an invite code to join</div>
             </div>
           </div>
           <div className="text-gray-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all duration-200 text-2xl">

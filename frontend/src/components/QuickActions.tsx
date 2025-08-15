@@ -55,25 +55,25 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onOpenAI }) => {
 
   return (
     <>
-    <Card className="p-4 bg-white/70 backdrop-blur-sm border border-white/20">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-800">Quick Actions</h3>
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Quick Actions</h3>
         <div className="text-gray-400 text-sm">⋯</div>
       </div>
       
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         {actions.map((action) => (
           <button
             key={action.id}
-            className="group p-3 rounded-2xl bg-gradient-to-r hover:scale-[1.05] transition-all duration-200 shadow-sm hover:shadow-md"
+            className="group p-2 rounded-2xl bg-gradient-to-r hover:scale-[1.05] transition-all duration-200 shadow-sm hover:shadow-md"
             style={{
               background: `linear-gradient(135deg, var(--tw-gradient-stops))`,
             }}
             onClick={action.onClick}
           >
-            <div className={`bg-gradient-to-r ${action.gradient} rounded-2xl p-3 w-full`}>
+            <div className={`bg-gradient-to-r ${action.gradient} rounded-2xl p-2 w-full`}>
               <div className="text-center">
-                <div className="text-2xl mb-2">
+                <div className="text-lg mb-1">
                   {action.icon}
                 </div>
                 <p className="text-xs font-medium text-white opacity-90">
@@ -85,7 +85,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onOpenAI }) => {
         ))}
       </div>
 
-    </Card>
+    </div>
     
     {/* Quick Task Modal */}
     {activeModal === 'add-task' && (

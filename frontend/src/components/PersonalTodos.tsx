@@ -230,7 +230,7 @@ const PersonalTodos: React.FC = () => {
   const filteredTodos = getFilteredTodos()
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-white/90 to-blue-50/90 backdrop-blur-sm border border-white/20">
+    <Card className="p-6" gradient={true}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
@@ -238,7 +238,7 @@ const PersonalTodos: React.FC = () => {
             <span className="text-white text-2xl">📝</span>
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-gray-800">Personal To Dos</h3>
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Personal To Dos</h3>
             <p className="text-gray-500">
               {stats.pending} pending • {stats.completed} completed
               {stats.overdue > 0 && <span className="text-red-600"> • {stats.overdue} overdue</span>}
@@ -257,27 +257,27 @@ const PersonalTodos: React.FC = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-gray-800">{stats.total}</div>
           <div className="text-sm text-gray-600">Total</div>
         </div>
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-blue-600">{stats.pending}</div>
           <div className="text-sm text-gray-600">Pending</div>
         </div>
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
           <div className="text-sm text-gray-600">Done</div>
         </div>
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-orange-600">{stats.high}</div>
           <div className="text-sm text-gray-600">High</div>
         </div>
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-red-600">{stats.urgent}</div>
           <div className="text-sm text-gray-600">Urgent</div>
         </div>
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
           <div className="text-sm text-gray-600">Overdue</div>
         </div>
@@ -298,7 +298,7 @@ const PersonalTodos: React.FC = () => {
             className={`px-3 py-2 rounded-lg text-sm transition-colors ${
               filter === filterOption.key
                 ? 'bg-blue-500 text-white'
-                : 'bg-white/50 text-gray-700 hover:bg-white/80'
+                : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-700/80'
             }`}
           >
             {filterOption.label} ({filterOption.count})
@@ -320,7 +320,7 @@ const PersonalTodos: React.FC = () => {
 
       {/* Add Todo Form */}
       {showAddForm && (
-        <div className="mb-6 p-4 bg-white/70 rounded-lg border">
+        <div className="mb-6 p-4 bg-white/70 dark:bg-gray-800/70 rounded-lg border dark:border-gray-700">
           <form onSubmit={handleAddTodo} className="space-y-4">
             <div>
               <input
@@ -457,7 +457,7 @@ const PersonalTodos: React.FC = () => {
               className={`p-4 rounded-lg border transition-all ${
                 todo.completed 
                   ? 'bg-green-50 border-green-200' 
-                  : 'bg-white/70 border-gray-200 hover:bg-white/90'
+                  : 'bg-white/70 dark:bg-gray-800/70 border-gray-200 dark:border-gray-700 hover:bg-white/90 dark:hover:bg-gray-700/90'
               }`}
             >
               <div className="flex items-start space-x-3">

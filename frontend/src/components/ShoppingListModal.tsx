@@ -234,15 +234,15 @@ const ShoppingListModal: React.FC<ShoppingListModalProps> = ({
           ) : (
             <>
               {/* Summary */}
-              <div className="bg-blue-50 rounded-lg p-4 mb-6">
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm text-blue-700 font-medium">Total Ingredients: {ingredients.length}</p>
-                    <p className="text-sm text-blue-600">Already Have: {ingredients.filter(i => i.alreadyHave).length}</p>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">Total Ingredients: {ingredients.length}</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-400">Already Have: {ingredients.filter(i => i.alreadyHave).length}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-bold text-blue-800">${totalEstimatedCost.toFixed(2)}</p>
-                    <p className="text-sm text-blue-600">Estimated Cost</p>
+                    <p className="text-lg font-bold text-blue-800 dark:text-blue-200">${totalEstimatedCost.toFixed(2)}</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-400">Estimated Cost</p>
                   </div>
                 </div>
               </div>
@@ -254,8 +254,8 @@ const ShoppingListModal: React.FC<ShoppingListModalProps> = ({
                     key={index}
                     className={`flex items-center space-x-3 p-3 rounded-lg border transition-all ${
                       ingredient.alreadyHave 
-                        ? 'bg-green-50 border-green-200' 
-                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                        ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                        : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <input
@@ -272,7 +272,7 @@ const ShoppingListModal: React.FC<ShoppingListModalProps> = ({
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className={`font-semibold ${ingredient.alreadyHave ? 'text-green-600 line-through' : 'text-blue-600'}`}>
+                      <span className={`font-semibold ${ingredient.alreadyHave ? 'text-green-600 dark:text-green-400 line-through' : 'text-blue-600 dark:text-blue-400'}`}>
                         ${(ingredient.estimatedPrice || 0).toFixed(2)}
                       </span>
                     </div>

@@ -192,7 +192,7 @@ const GiftTracker: React.FC = () => {
   }
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-white/90 to-purple-50/90 backdrop-blur-sm border border-white/20">
+    <Card className="p-6" gradient={true}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
@@ -200,7 +200,7 @@ const GiftTracker: React.FC = () => {
             <span className="text-white text-2xl">🎁</span>
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-gray-800">Gift Tracker</h3>
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Gift Tracker</h3>
             <p className="text-gray-500">
               {stats.active} active events • {formatCurrency(stats.totalSpent)} spent
             </p>
@@ -218,31 +218,31 @@ const GiftTracker: React.FC = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <div className="bg-white/50 p-3 rounded-lg text-center">
-          <div className="text-2xl font-bold text-gray-800">{stats.total}</div>
-          <div className="text-sm text-gray-600">Total Events</div>
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
+          <div className="text-2xl font-bold text-gray-800 dark:text-white">{stats.total}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Events</div>
         </div>
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-blue-600">{stats.planning}</div>
-          <div className="text-sm text-gray-600">Planning</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Planning</div>
         </div>
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-orange-600">{stats.shopping}</div>
-          <div className="text-sm text-gray-600">Shopping</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Shopping</div>
         </div>
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-purple-600">{formatCurrency(stats.totalBudget)}</div>
-          <div className="text-sm text-gray-600">Budget</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Budget</div>
         </div>
-        <div className="bg-white/50 p-3 rounded-lg text-center">
+        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-green-600">{formatCurrency(stats.totalSpent)}</div>
-          <div className="text-sm text-gray-600">Spent</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Spent</div>
         </div>
       </div>
 
       {/* Create Event Form */}
       {showCreateForm && (
-        <div className="mb-6 p-4 bg-white/70 rounded-lg border">
+        <div className="mb-6 p-4 bg-white/70 dark:bg-gray-800/70 rounded-lg border dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Create New Event</h3>
             <button
@@ -356,13 +356,13 @@ const GiftTracker: React.FC = () => {
           events.map(event => (
             <div
               key={event.id}
-              className="p-4 rounded-lg border bg-white/70 hover:bg-white/90 transition-all cursor-pointer"
+              className="p-4 rounded-lg border bg-white/70 dark:bg-gray-800/70 border-gray-200 dark:border-gray-700 hover:bg-white/90 dark:hover:bg-gray-700/90 transition-all cursor-pointer"
               onClick={() => setSelectedEvent(event)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <h4 className="text-lg font-medium text-gray-800">{event.title}</h4>
+                    <h4 className="text-lg font-medium text-gray-800 dark:text-white">{event.title}</h4>
                     <span className={`px-2 py-1 rounded text-xs ${getStatusColor(event.status)}`}>
                       {getStatusIcon(event.status)} {event.status}
                     </span>
@@ -549,7 +549,7 @@ const GiftEventDetail: React.FC<{
   }
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-white/90 to-purple-50/90 backdrop-blur-sm border border-white/20">
+    <Card className="p-6" gradient={true}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
@@ -560,7 +560,7 @@ const GiftEventDetail: React.FC<{
             <span className="text-gray-600 text-xl">←</span>
           </button>
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">{event.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{event.title}</h2>
             <p className="text-gray-500">
               {recipients.length} recipients • {formatCurrency(event.totalSpent)} of {formatCurrency(event.totalBudget)}
             </p>
@@ -578,7 +578,7 @@ const GiftEventDetail: React.FC<{
 
       {/* Event Budget Progress */}
       {event.totalBudget > 0 && (
-        <div className="mb-6 p-4 bg-white/50 rounded-lg">
+        <div className="mb-6 p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium">Event Budget</span>
             <span className="text-sm text-gray-600">
@@ -602,7 +602,7 @@ const GiftEventDetail: React.FC<{
 
       {/* Add Recipient Form */}
       {showAddRecipient && (
-        <div className="mb-6 p-4 bg-white/70 rounded-lg border">
+        <div className="mb-6 p-4 bg-white/70 dark:bg-gray-800/70 rounded-lg border dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Add Recipient</h3>
             <button
@@ -721,14 +721,14 @@ const GiftEventDetail: React.FC<{
           {recipients.map(recipient => (
             <div
               key={recipient.id}
-              className="p-4 rounded-lg border bg-white/70 hover:bg-white/90 transition-all cursor-pointer"
+              className="p-4 rounded-lg border bg-white/70 dark:bg-gray-800/70 border-gray-200 dark:border-gray-700 hover:bg-white/90 dark:hover:bg-gray-700/90 transition-all cursor-pointer"
               onClick={() => setSelectedRecipient(recipient)}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-2">
                   <span className="text-lg">{getGroupIcon(recipient.group)}</span>
                   <div>
-                    <h4 className="font-medium text-gray-800">{recipient.name}</h4>
+                    <h4 className="font-medium text-gray-800 dark:text-white">{recipient.name}</h4>
                     <p className="text-xs text-gray-500">{recipient.group}</p>
                   </div>
                 </div>
@@ -1090,7 +1090,7 @@ const RecipientDetail: React.FC<{
   const purchases = giftItems.filter(item => item.type === 'purchase')
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-white/90 to-blue-50/90 backdrop-blur-sm border border-white/20">
+    <Card className="p-6" gradient={true}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
@@ -1101,7 +1101,7 @@ const RecipientDetail: React.FC<{
             <span className="text-gray-600 text-xl">←</span>
           </button>
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">{recipient.name}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{recipient.name}</h2>
             <p className="text-gray-500">
               {recipient.group} • {ideas.length} ideas, {purchases.length} purchases • {formatCurrency(recipient.totalSpent || 0)} spent
             </p>
@@ -1134,7 +1134,7 @@ const RecipientDetail: React.FC<{
 
       {/* Budget Progress */}
       {recipient.budget > 0 && (
-        <div className="mb-6 p-4 bg-white/50 rounded-lg">
+        <div className="mb-6 p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium">{recipient.name}'s Budget</span>
             <span className="text-sm text-gray-600">
@@ -1169,7 +1169,7 @@ const RecipientDetail: React.FC<{
             className={`px-3 py-2 rounded-lg text-sm transition-colors ${
               filter === filterOption.key
                 ? 'bg-blue-500 text-white'
-                : 'bg-white/50 text-gray-700 hover:bg-white/80'
+                : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-700/80'
             }`}
           >
             {filterOption.label} ({filterOption.count})
@@ -1179,7 +1179,7 @@ const RecipientDetail: React.FC<{
 
       {/* Add Gift Form */}
       {showAddForm && (
-        <div className="mb-6 p-4 bg-white/70 rounded-lg border">
+        <div className="mb-6 p-4 bg-white/70 dark:bg-gray-800/70 rounded-lg border dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">
               {formType === 'idea' ? '💡 Track Gift Idea' : '🛒 Track Purchase'}
@@ -1319,7 +1319,7 @@ const RecipientDetail: React.FC<{
 
       {/* Edit Gift Form */}
       {showEditForm && editingItem && (
-        <div className="mb-6 p-4 bg-white/70 rounded-lg border">
+        <div className="mb-6 p-4 bg-white/70 dark:bg-gray-800/70 rounded-lg border dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">
               {editingItem.type === 'idea' ? '💡 Edit Gift Idea' : '🛒 Edit Purchase'}
@@ -1509,7 +1509,7 @@ const RecipientDetail: React.FC<{
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <h4 className="font-medium text-gray-800">{item.name}</h4>
+                    <h4 className="font-medium text-gray-800 dark:text-white">{item.name}</h4>
                     <span className={`px-2 py-1 rounded text-xs ${getStatusColor(item.status)}`}>
                       {getStatusIcon(item.status)} {item.status.replace('_', ' ')}
                     </span>

@@ -411,7 +411,7 @@ const PetCare: React.FC = () => {
       <Card className="p-6">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-          <span className="ml-3 text-gray-600">Loading pet care data...</span>
+          <span className="ml-3 text-gray-600 dark:text-gray-400">Loading pet care data...</span>
         </div>
       </Card>
     )
@@ -427,7 +427,7 @@ const PetCare: React.FC = () => {
               <span className="text-2xl">🐾</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Pet Care Center</h1>
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Pet Care Center</h1>
               <p className="opacity-90">Manage your pets and their health records</p>
             </div>
           </div>
@@ -459,7 +459,7 @@ const PetCare: React.FC = () => {
               className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg transition-all font-medium ${
                 activeTab === tab.key
                   ? 'bg-green-500 text-white shadow-md'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               <span>{tab.label.split(' ')[0]}</span>
@@ -473,20 +473,20 @@ const PetCare: React.FC = () => {
       {/* Vaccine Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="p-4 text-center">
-          <div className="text-2xl font-bold text-gray-800">{vaccineStats.total}</div>
-          <div className="text-sm text-gray-600">Total Vaccines</div>
+          <div className="text-2xl font-bold text-gray-800 dark:text-white">{vaccineStats.total}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Vaccines</div>
         </Card>
         <Card className="p-4 text-center">
           <div className="text-2xl font-bold text-green-600">{vaccineStats.current}</div>
-          <div className="text-sm text-gray-600">Current</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Current</div>
         </Card>
         <Card className="p-4 text-center">
           <div className="text-2xl font-bold text-orange-600">{vaccineStats.due_soon}</div>
-          <div className="text-sm text-gray-600">Due Soon</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Due Soon</div>
         </Card>
         <Card className="p-4 text-center">
           <div className="text-2xl font-bold text-red-600">{vaccineStats.overdue}</div>
-          <div className="text-sm text-gray-600">Overdue</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Overdue</div>
         </Card>
       </div>
 
@@ -496,11 +496,11 @@ const PetCare: React.FC = () => {
           {/* Pet List */}
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">My Pets ({pets.length})</h3>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">My Pets ({pets.length})</h3>
             </div>
             
             {pets.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <div className="text-4xl mb-2">🐾</div>
                 <p>No pets added yet.</p>
                 <button
@@ -526,8 +526,8 @@ const PetCare: React.FC = () => {
                       <div className="flex items-center space-x-3">
                         <span className="text-2xl">{getPetIcon(pet.type)}</span>
                         <div>
-                          <h4 className="font-medium text-gray-800">{pet.name}</h4>
-                          <div className="text-sm text-gray-500">
+                          <h4 className="font-medium text-gray-800 dark:text-white">{pet.name}</h4>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             {pet.breed && <span>{pet.breed} • </span>}
                             <span className="capitalize">{pet.type}</span>
                             {pet.age && <span> • {pet.age}</span>}
@@ -558,8 +558,8 @@ const PetCare: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <span className="text-3xl">{getPetIcon(selectedPet.type)}</span>
                   <div>
-                    <h3 className="text-lg font-semibold">{selectedPet.name}</h3>
-                    <p className="text-gray-500 capitalize">{selectedPet.type}</p>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{selectedPet.name}</h3>
+                    <p className="text-gray-500 dark:text-gray-400 capitalize">{selectedPet.type}</p>
                   </div>
                 </div>
                 
@@ -574,46 +574,46 @@ const PetCare: React.FC = () => {
               <div className="space-y-3 text-sm">
                 {selectedPet.breed && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Breed:</span>
+                    <span className="text-gray-500 dark:text-gray-400">Breed:</span>
                     <span>{selectedPet.breed}</span>
                   </div>
                 )}
                 
                 {selectedPet.age && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Age:</span>
+                    <span className="text-gray-500 dark:text-gray-400">Age:</span>
                     <span>{selectedPet.age}</span>
                   </div>
                 )}
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Gender:</span>
+                  <span className="text-gray-500 dark:text-gray-400">Gender:</span>
                   <span className="capitalize">{selectedPet.gender}</span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Spayed/Neutered:</span>
+                  <span className="text-gray-500 dark:text-gray-400">Spayed/Neutered:</span>
                   <span>{selectedPet.spayedNeutered ? 'Yes' : 'No'}</span>
                 </div>
                 
                 {selectedPet.weight && selectedPet.weight.value > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Weight:</span>
+                    <span className="text-gray-500 dark:text-gray-400">Weight:</span>
                     <span>{selectedPet.weight.value} {selectedPet.weight.unit}</span>
                   </div>
                 )}
                 
                 {selectedPet.veterinarian?.name && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Veterinarian:</span>
+                    <span className="text-gray-500 dark:text-gray-400">Veterinarian:</span>
                     <span>{selectedPet.veterinarian.name}</span>
                   </div>
                 )}
                 
                 {selectedPet.notes && (
                   <div>
-                    <div className="text-gray-500 mb-1">Notes:</div>
-                    <p className="text-gray-700">{selectedPet.notes}</p>
+                    <div className="text-gray-500 dark:text-gray-400 mb-1">Notes:</div>
+                    <p className="text-gray-700 dark:text-gray-300">{selectedPet.notes}</p>
                   </div>
                 )}
               </div>
@@ -625,7 +625,7 @@ const PetCare: React.FC = () => {
       {activeTab === 'vaccines' && selectedPet && (
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Vaccines for {selectedPet.name}</h3>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Vaccines for {selectedPet.name}</h3>
             <button
               onClick={() => setShowAddVaccineForm(true)}
               className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
@@ -635,7 +635,7 @@ const PetCare: React.FC = () => {
           </div>
           
           {vaccines.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <div className="text-4xl mb-2">💉</div>
               <p>No vaccine records found for {selectedPet.name}.</p>
             </div>
@@ -693,10 +693,10 @@ const PetCare: React.FC = () => {
 
       {activeTab === 'upcoming' && (
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Upcoming Vaccines (Next 30 Days)</h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Upcoming Vaccines (Next 30 Days)</h3>
           
           {upcomingVaccines.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <div className="text-4xl mb-2">📅</div>
               <p>No vaccines due in the next 30 days.</p>
             </div>
@@ -709,7 +709,7 @@ const PetCare: React.FC = () => {
                       <span className="text-2xl">{getPetIcon(vaccine.petType || 'other')}</span>
                       <div>
                         <h4 className="font-medium">{vaccine.petName} - {vaccine.vaccineName}</h4>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
                           Type: {vaccine.vaccineType} • Pet: {vaccine.petType}
                         </div>
                       </div>
@@ -717,7 +717,7 @@ const PetCare: React.FC = () => {
                     
                     <div className="text-right">
                       <div className="font-medium text-orange-700">{getDaysUntilDue(vaccine.nextDueDate)}</div>
-                      <div className="text-sm text-gray-600">{formatDate(vaccine.nextDueDate)}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{formatDate(vaccine.nextDueDate)}</div>
                     </div>
                   </div>
                 </div>
@@ -729,10 +729,10 @@ const PetCare: React.FC = () => {
 
       {activeTab === 'overdue' && (
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Overdue Vaccines</h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Overdue Vaccines</h3>
           
           {overdueVaccines.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <div className="text-4xl mb-2">✅</div>
               <p>No overdue vaccines! Your pets are up to date.</p>
             </div>
@@ -745,7 +745,7 @@ const PetCare: React.FC = () => {
                       <span className="text-2xl">{getPetIcon(vaccine.petType || 'other')}</span>
                       <div>
                         <h4 className="font-medium">{vaccine.petName} - {vaccine.vaccineName}</h4>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
                           Type: {vaccine.vaccineType} • Pet: {vaccine.petType}
                         </div>
                       </div>
@@ -753,7 +753,7 @@ const PetCare: React.FC = () => {
                     
                     <div className="text-right">
                       <div className="font-medium text-red-700">{vaccine.daysOverdue} days overdue</div>
-                      <div className="text-sm text-gray-600">Due: {formatDate(vaccine.nextDueDate)}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Due: {formatDate(vaccine.nextDueDate)}</div>
                     </div>
                   </div>
                 </div>
@@ -780,7 +780,7 @@ const PetCare: React.FC = () => {
             <form onSubmit={handleAddPet} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Pet Name</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pet Name</label>
                   <input
                     type="text"
                     value={newPet.name}
@@ -791,7 +791,7 @@ const PetCare: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Pet Type</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pet Type</label>
                   <select
                     value={newPet.type}
                     onChange={(e) => setNewPet(prev => ({ ...prev, type: e.target.value }))}
@@ -804,7 +804,7 @@ const PetCare: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Breed (Optional)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Breed (Optional)</label>
                   <input
                     type="text"
                     value={newPet.breed}
@@ -814,7 +814,7 @@ const PetCare: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Birth Date (Optional)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Birth Date (Optional)</label>
                   <input
                     type="date"
                     value={newPet.birthDate}
@@ -824,7 +824,7 @@ const PetCare: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gender</label>
                   <select
                     value={newPet.gender}
                     onChange={(e) => setNewPet(prev => ({ ...prev, gender: e.target.value }))}
@@ -850,7 +850,7 @@ const PetCare: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes (Optional)</label>
                 <textarea
                   value={newPet.notes}
                   onChange={(e) => setNewPet(prev => ({ ...prev, notes: e.target.value }))}
@@ -896,7 +896,7 @@ const PetCare: React.FC = () => {
             <form onSubmit={handleAddVaccine} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Vaccine Name</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vaccine Name</label>
                   <input
                     type="text"
                     value={newVaccine.vaccineName}
@@ -907,7 +907,7 @@ const PetCare: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Vaccine Type</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vaccine Type</label>
                   <select
                     value={newVaccine.vaccineType}
                     onChange={(e) => setNewVaccine(prev => ({ ...prev, vaccineType: e.target.value }))}
@@ -922,7 +922,7 @@ const PetCare: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Administered Date</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Administered Date</label>
                   <input
                     type="date"
                     value={newVaccine.administeredDate}
@@ -933,7 +933,7 @@ const PetCare: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Date</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expiration Date</label>
                   <input
                     type="date"
                     value={newVaccine.expirationDate}
@@ -944,7 +944,7 @@ const PetCare: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Next Due Date</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Next Due Date</label>
                   <input
                     type="date"
                     value={newVaccine.nextDueDate}
@@ -968,7 +968,7 @@ const PetCare: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes (Optional)</label>
                 <textarea
                   value={newVaccine.notes}
                   onChange={(e) => setNewVaccine(prev => ({ ...prev, notes: e.target.value }))}

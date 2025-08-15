@@ -5,13 +5,10 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 
 interface HeaderProps {
-  onOpenMembers?: () => void
   onOpenFamilySettings?: () => void
-  onOpenGrocery?: () => void
-  onOpenMealPlanning?: () => void
 }
 
-const Header: React.FC<HeaderProps> = ({ onOpenMembers, onOpenFamilySettings, onOpenGrocery, onOpenMealPlanning }) => {
+const Header: React.FC<HeaderProps> = ({ onOpenFamilySettings }) => {
   const { user, family, logout } = useAuth()
   const { isDarkMode, toggleDarkMode } = useTheme()
   const [showProfileMenu, setShowProfileMenu] = useState(false)
@@ -49,41 +46,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenMembers, onOpenFamilySettings, on
           <div className="flex items-center space-x-4">
             {/* Action Buttons */}
             <div className="flex items-center space-x-2">
-              {/* Quick Access Buttons */}
-              {onOpenGrocery && (
-                <button 
-                  onClick={onOpenGrocery}
-                  className="flex items-center space-x-1 px-2 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
-                  title="Grocery List"
-                >
-                  <span className="text-sm">🛒</span>
-                  <span className="hidden md:inline text-xs font-medium">Groceries</span>
-                </button>
-              )}
-              
-              {onOpenMealPlanning && (
-                <button 
-                  onClick={onOpenMealPlanning}
-                  className="flex items-center space-x-1 px-2 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-200"
-                  title="Meal Planning"
-                >
-                  <span className="text-sm">🍽️</span>
-                  <span className="hidden md:inline text-xs font-medium">Meals</span>
-                </button>
-              )}
-              
-              {/* Members Button */}
-              {onOpenMembers && (
-                <button 
-                  onClick={onOpenMembers}
-                  className="flex items-center space-x-1 px-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
-                  title="Manage Family Members"
-                >
-                  <span className="text-sm">👥</span>
-                  <span className="hidden md:inline text-xs font-medium">Members</span>
-                </button>
-              )}
-              
               <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200" title="Notifications">
                 <span className="text-gray-600 dark:text-gray-300 text-lg">🔔</span>
               </button>

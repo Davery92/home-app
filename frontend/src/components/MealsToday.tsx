@@ -71,11 +71,11 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">
                 🤖 Generate AI {formData.generationType === 'weekly' ? 'Weekly Meal Plan' : 'Meal'}
               </h2>
               {favoriteMeals.length >= 3 && (
@@ -95,7 +95,7 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Generation Type Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Generation Type
               </label>
               <div className="flex space-x-4">
@@ -126,7 +126,7 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
 
             {/* Available Ingredients */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Available Ingredients (optional)
               </label>
               <textarea
@@ -139,7 +139,7 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {formData.generationType === 'weekly' ? 'Meal preferences and style *' : 'Describe what you want to cook *'}
               </label>
               <textarea
@@ -159,7 +159,7 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
             <div className="grid grid-cols-2 gap-4">
               {formData.generationType === 'single' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Meal Type
                   </label>
                   <select
@@ -176,7 +176,7 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
                 </div>
               )}
               <div className={formData.generationType === 'weekly' ? 'col-span-2' : ''}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Servings per meal
                 </label>
                 <input
@@ -192,7 +192,7 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Cuisine (optional)
                 </label>
                 <input
@@ -204,7 +204,7 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Difficulty
                 </label>
                 <select
@@ -220,7 +220,7 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Max Cooking Time (minutes)
               </label>
               <input
@@ -234,7 +234,7 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Dietary Restrictions
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -326,7 +326,7 @@ const MealModal: React.FC<MealModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-      <Card className={`w-full overflow-y-auto bg-white transition-all duration-300 ${
+      <Card className={`w-full overflow-y-auto transition-all duration-300 ${
         isExpanded 
           ? 'max-w-none h-[95vh] mx-4' 
           : 'max-w-4xl max-h-[90vh]'
@@ -336,7 +336,7 @@ const MealModal: React.FC<MealModalProps> = ({
             <div className="flex items-center space-x-3">
               <span className="text-3xl">{getMealTypeEmoji(meal.mealType)}</span>
               <div>
-                <h2 className="text-xl font-bold text-gray-800">{meal.title}</h2>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white">{meal.title}</h2>
                 {meal.aiGenerated && (
                   <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
                     🤖 AI Generated
@@ -778,7 +778,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
       <Card className="p-6 bg-gradient-to-br from-white/90 to-red-50/90 backdrop-blur-sm border border-white/20">
         <div className="text-center">
           <div className="text-red-500 text-4xl mb-4">❌</div>
-          <h3 className="text-lg font-bold text-gray-800 mb-2">Failed to Load Meals</h3>
+          <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Failed to Load Meals</h3>
           <p className="text-sm text-red-600">{error}</p>
         </div>
       </Card>
@@ -789,7 +789,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
     <>
       {isExpanded && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-          <Card className="w-full max-w-7xl h-[95vh] overflow-y-auto bg-gradient-to-br from-white/95 to-purple-50/95 backdrop-blur-sm border border-white/20">
+          <Card className="w-full max-w-7xl h-[95vh] overflow-y-auto" gradient={true}>
             <div className="p-6">
               {/* Expanded Header */}
               <div className="flex items-center justify-between mb-6">
@@ -798,7 +798,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
                     <span className="text-white text-2xl">🍽️</span>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-800">{getViewTitle()}</h3>
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white">{getViewTitle()}</h3>
                     <p className="text-gray-500">
                       {displayMeals.length} meals • {favoriteMeals.length} favorites
                     </p>
@@ -810,7 +810,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
                   <select
                     value={mealView}
                     onChange={(e) => setMealView(e.target.value as 'today' | 'upcoming' | 'favorites')}
-                    className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+                    className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
                   >
                     <option value="today">🍽️ Today's Meals</option>
                     <option value="upcoming">📅 Upcoming (7 days)</option>
@@ -847,7 +847,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
                 <div className="grid lg:grid-cols-2 gap-8">
                   {/* Today's Meals Section */}
                   <div>
-                    <h4 className="text-xl font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center space-x-2">
                       <span>📅</span>
                       <span>Today's Meals</span>
                     </h4>
@@ -872,7 +872,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
                                       {meal.aiGenerated && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">🤖 AI</span>}
                                       {meal.isFavorite && <span className="text-red-500">❤️</span>}
                                     </h4>
-                                    <p className="text-lg font-medium text-gray-800 truncate">{meal.title}</p>
+                                    <p className="text-lg font-medium text-gray-800 dark:text-white truncate">{meal.title}</p>
                                   </div>
                                   <div className="flex items-center space-x-2 text-sm text-gray-500">
                                     <span>⏱️ {meal.totalTime}m</span>
@@ -898,7 +898,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
 
                   {/* This Week's Meals Section */}
                   <div>
-                    <h4 className="text-xl font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center space-x-2">
                       <span>📋</span>
                       <span>This Week's Meals</span>
                       <span className="text-sm text-gray-500 font-normal">({upcomingMeals.length} meals)</span>
@@ -932,7 +932,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
                                       </div>
                                       <h4 className="font-medium capitalize flex items-center space-x-2">
                                         <span className="text-gray-600">{meal.mealType}:</span>
-                                        <span className="text-gray-800">{meal.title}</span>
+                                        <span className="text-gray-800 dark:text-white">{meal.title}</span>
                                         {meal.aiGenerated && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">🤖 AI</span>}
                                         {meal.isFavorite && <span className="text-red-500">❤️</span>}
                                       </h4>
@@ -972,7 +972,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
         </div>
       )}
       
-      <Card className="p-6 bg-gradient-to-br from-white/90 to-purple-50/90 backdrop-blur-sm border border-white/20">
+      <Card className="p-6" gradient={true}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -980,7 +980,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
               <span className="text-white text-lg">🍽️</span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-800">Meals & Weekly Plan</h3>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white">Meals & Weekly Plan</h3>
               <p className="text-sm text-gray-500">
                 {todaysMeals.length} today • {upcomingMeals.length} this week
               </p>
@@ -1018,7 +1018,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
           <div className="space-y-6">
             {/* Today's Meals Section */}
             <div>
-              <h4 className="font-semibold text-gray-800 mb-3 flex items-center space-x-2">
+              <h4 className="font-semibold text-gray-800 dark:text-white mb-3 flex items-center space-x-2">
                 <span>📅</span>
                 <span>Today's Meals</span>
               </h4>
@@ -1069,7 +1069,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
 
             {/* Upcoming Meals Section */}
             <div>
-              <h4 className="font-semibold text-gray-800 mb-3 flex items-center space-x-2">
+              <h4 className="font-semibold text-gray-800 dark:text-white mb-3 flex items-center space-x-2">
                 <span>📋</span>
                 <span>This Week's Meals</span>
                 <span className="text-sm text-gray-500 font-normal">({upcomingMeals.length} meals)</span>
@@ -1154,10 +1154,10 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
       {/* Generated Meal Preview Modal */}
       {generatedMeal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-          <Card className="w-full max-w-2xl bg-white">
+          <Card className="w-full max-w-2xl">
             <div className="p-6">
               <div className="text-center mb-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-2">🤖 AI Generated Meal</h2>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">🤖 AI Generated Meal</h2>
                 <p className="text-gray-600">Review and save your AI-generated meal plan</p>
               </div>
               
@@ -1216,10 +1216,10 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
       {/* Weekly Meals Preview Modal */}
       {generatedWeeklyMeals.length > 0 && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-          <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
+          <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="text-center mb-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-2">🤖 AI Generated Weekly Meal Plan</h2>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">🤖 AI Generated Weekly Meal Plan</h2>
                 <p className="text-gray-600">Review and save your 7-day meal plan</p>
               </div>
               
@@ -1238,7 +1238,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
                             <span className="text-sm">{mealInfo.emoji}</span>
                           </div>
                           <div>
-                            <h3 className="font-bold text-gray-800">{dayName} - {meal.title}</h3>
+                            <h3 className="font-bold text-gray-800 dark:text-white">{dayName} - {meal.title}</h3>
                             <p className="text-sm text-gray-600 capitalize">{meal.mealType}</p>
                           </div>
                         </div>

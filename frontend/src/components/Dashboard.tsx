@@ -10,7 +10,6 @@ import MealsToday from './MealsToday'
 import GroceryList from './GroceryList'
 import Header from './Header'
 import AIAssistant from './AIAssistant'
-import FamilyMembersModal from './FamilyMembersModal'
 import FamilySettingsModal from './FamilySettingsModal'
 import PersonalTodos from './PersonalTodos'
 import CleaningSchedule from './CleaningSchedule'
@@ -23,9 +22,8 @@ import { useChores } from '@/hooks/useChores'
 
 const Dashboard: React.FC = () => {
   const [isAIOpen, setIsAIOpen] = useState(false)
-  const [isMembersOpen, setIsMembersOpen] = useState(false)
   const [isFamilySettingsOpen, setIsFamilySettingsOpen] = useState(false)
-  const [currentView, setCurrentView] = useState<'home' | 'todos' | 'cleaning' | 'reminders' | 'petcare' | 'gifts'>('home')
+  const [currentView, setCurrentView] = useState<'home' | 'calendar' | 'mealplan' | 'todos' | 'cleaning' | 'reminders' | 'pets' | 'gifts' | 'habits' | 'shopping'>('home')
   const { user, token, family } = useAuth()
   
   // States for quick access
@@ -67,36 +65,55 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900">
       <Header 
-        onOpenMembers={() => setIsMembersOpen(true)} 
         onOpenFamilySettings={() => setIsFamilySettingsOpen(true)}
-        onOpenGrocery={handleGroceryQuickAccess}
-        onOpenMealPlanning={handleMealPlanningQuickAccess}
       />
 
       {/* Navigation Tabs */}
       <div className="max-w-full mx-auto px-4 md:px-6 lg:px-8 pt-4">
         <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-1 shadow-sm border border-white/20 dark:border-gray-700/30 mb-4">
-          <div className="flex space-x-1">
+          {/* Top Row */}
+          <div className="flex space-x-1 mb-1">
             {[
-              { key: 'home', label: '🏠 Home', icon: '🏠' },
-              { key: 'todos', label: '📝 Personal To Dos', icon: '📝' },
-              { key: 'cleaning', label: '🧹 Cleaning Schedule', icon: '🧹' },
-              { key: 'reminders', label: '⏰ Reminders', icon: '⏰' },
-              { key: 'petcare', label: '🐾 Pet Care', icon: '🐾' },
-              { key: 'gifts', label: '🎁 Gift Tracker', icon: '🎁' }
+              { key: 'home', label: 'Home', icon: '🏠' },
+              { key: 'calendar', label: 'Calendar', icon: '📅' },
+              { key: 'mealplan', label: 'Meal Plan', icon: '🍽️' },
+              { key: 'todos', label: 'To Do', icon: '📝' },
+              { key: 'cleaning', label: 'Cleaning Schedule', icon: '🧹' },
+              { key: 'reminders', label: 'Reminders', icon: '⏰' }
             ].map(tab => (
               <button
                 key={tab.key}
                 onClick={() => setCurrentView(tab.key as any)}
-                className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg transition-all font-medium ${
+                className={`flex-1 flex items-center justify-center space-x-1 py-2 px-2 rounded-lg transition-all font-medium text-xs md:text-sm ${
                   currentView === tab.key
                     ? 'bg-blue-500 text-white shadow-md'
                     : 'text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:text-gray-800 dark:hover:text-gray-100'
                 }`}
               >
-                <span className="text-lg">{tab.icon}</span>
-                <span className="hidden sm:inline">{tab.label.split(' ').slice(1).join(' ')}</span>
-                <span className="sm:hidden">{tab.icon}</span>
+                <span className="text-sm md:text-lg">{tab.icon}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+          {/* Bottom Row */}
+          <div className="flex space-x-1">
+            {[
+              { key: 'pets', label: 'Pets', icon: '🐾' },
+              { key: 'gifts', label: 'Gift Tracker', icon: '🎁' },
+              { key: 'habits', label: 'Habit Tracker', icon: '✅' },
+              { key: 'shopping', label: 'Shopping List', icon: '🛒' }
+            ].map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setCurrentView(tab.key as any)}
+                className={`flex-1 flex items-center justify-center space-x-1 py-2 px-2 rounded-lg transition-all font-medium text-xs md:text-sm ${
+                  currentView === tab.key
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:text-gray-800 dark:hover:text-gray-100'
+                }`}
+              >
+                <span className="text-sm md:text-lg">{tab.icon}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
               </button>
             ))}
           </div>
@@ -106,46 +123,37 @@ const Dashboard: React.FC = () => {
       <div className="max-w-full mx-auto p-4 md:p-6 lg:p-8">
         {/* Main Dashboard View */}
         {currentView === 'home' && (
-          <div className="grid grid-cols-1 2xl:grid-cols-12 gap-6">
-            {/* Left Column - Main Content */}
-            <div className="2xl:col-span-7 flex flex-col">
-              {/* Top Row - Clock, Weather, Quick Actions */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <Clock />
-                <Weather />
-                <QuickActions onOpenAI={() => setIsAIOpen(true)} />
+          <div className="space-y-6">
+            {/* Top Row: Time, Weather, Today's Overview, Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Clock />
+              <Weather />
+              {/* Today's Overview */}
+              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-4 shadow-lg border border-white/20 dark:border-gray-700/30">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">Today's Overview</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600 dark:text-gray-300">📅 Events</span>
+                    <span className="text-xs font-medium text-gray-800 dark:text-white">3 today</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600 dark:text-gray-300">🍽️ Meals</span>
+                    <span className="text-xs font-medium text-gray-800 dark:text-white">2 planned</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600 dark:text-gray-300">🧹 Chores</span>
+                    <span className="text-xs font-medium text-gray-800 dark:text-white">{completedToday}/{totalChores}</span>
+                  </div>
+                </div>
               </div>
-
-              {/* Calendar - Expanded to fill remaining vertical space */}
-              <div className="flex-1 min-h-[600px]">
-                <Calendar />
+              {/* Quick Actions */}
+              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-4 shadow-lg border border-white/20 dark:border-gray-700/30">
+                <QuickActions onOpenAI={() => setIsAIOpen(true)} />
               </div>
             </div>
 
-            {/* Right Column - Chore Board and additional sections */}
-            <div className="2xl:col-span-5 space-y-6">
-              {/* Chore Board */}
-              <div>
-                <ChoreBoard 
-                  familyMembers={familyMembers}
-                  chores={chores}
-                  loading={choresLoading || membersLoading}
-                  error={choresError || membersError}
-                />
-              </div>
-
-              {/* Meals and Grocery Row - moved from left column */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <MealsToday 
-                  showAIModalProp={showMealPlanningModal}
-                  onCloseAIModal={() => setShowMealPlanningModal(false)}
-                />
-                <GroceryList 
-                  showAddModalProp={showGroceryModal}
-                  onCloseAddModal={() => setShowGroceryModal(false)}
-                />
-              </div>
-
+            {/* Second Row: Family Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Family Stats */}
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/20 dark:border-gray-700/30">
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Family Stats</h3>
@@ -163,6 +171,33 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Calendar View */}
+        {currentView === 'calendar' && (
+          <div className="max-w-7xl mx-auto">
+            <Calendar />
+          </div>
+        )}
+
+        {/* Meal Plan View */}
+        {currentView === 'mealplan' && (
+          <div className="max-w-4xl mx-auto">
+            <MealsToday 
+              showAIModalProp={showMealPlanningModal}
+              onCloseAIModal={() => setShowMealPlanningModal(false)}
+            />
+          </div>
+        )}
+
+        {/* Shopping List View */}
+        {currentView === 'shopping' && (
+          <div className="max-w-4xl mx-auto">
+            <GroceryList 
+              showAddModalProp={showGroceryModal}
+              onCloseAddModal={() => setShowGroceryModal(false)}
+            />
           </div>
         )}
 
@@ -188,9 +223,19 @@ const Dashboard: React.FC = () => {
         )}
 
         {/* Pet Care View */}
-        {currentView === 'petcare' && (
+        {currentView === 'pets' && (
           <div className="max-w-7xl mx-auto">
             <PetCare />
+          </div>
+        )}
+
+        {/* Habit Tracker View */}
+        {currentView === 'habits' && (
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/20 dark:border-gray-700/30">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Habit Tracker</h2>
+              <p className="text-gray-600 dark:text-gray-300">Habit tracking feature coming soon!</p>
+            </div>
           </div>
         )}
 
@@ -218,21 +263,6 @@ const Dashboard: React.FC = () => {
         familyId={user?.familyId}
       />
       
-      {/* Family Members Modal */}
-      <FamilyMembersModal
-        isOpen={isMembersOpen}
-        onClose={() => setIsMembersOpen(false)}
-        familyMembers={familyMembers}
-        onUpdateMembers={(members) => {
-          // The hook will handle the updates internally
-          console.log('Members updated:', members);
-        }}
-        onAddMember={addMember}
-        onUpdateMember={updateMember}
-        onDeleteMember={deleteMember}
-        onClearMemberPoints={clearMemberPoints}
-        onClearAllPoints={clearAllFamilyPoints}
-      />
       
       {/* Family Settings Modal */}
       <FamilySettingsModal
