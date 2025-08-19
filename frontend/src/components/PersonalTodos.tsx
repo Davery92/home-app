@@ -165,8 +165,36 @@ const PersonalTodos: React.FC = () => {
     }
   }
 
+  const handleUpdateTodo = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!token || !editingTodo || !editingTodo.title.trim()) return
+    
+    try {
+      const todoData = {
+        title: editingTodo.title.trim(),
+        description: editingTodo.description?.trim() || undefined,
+        priority: editingTodo.priority,
+        category: editingTodo.category?.trim() || undefined,
+        dueDate: editingTodo.dueDate || undefined,
+        tags: editingTodo.tags || []
+      }
+
+      const response = await apiService.updatePersonalTodo(token, editingTodo.id, todoData)
+      
+      if (response.success) {
+        setTodos(prev => prev.map(todo => 
+          todo.id === editingTodo.id ? response.todo : todo
+        ))
+        setEditingTodo(null)
+        fetchTodos() // Refresh stats
+      }
+    } catch (error) {
+      console.error('Error updating todo:', error)
+    }
+  }
+
   const handleDeleteTodo = async (todoId: string) => {
-    if (!token || !confirm('Are you sure you want to delete this todo?')) return
+    if (!token || !confirm('Are you sure you want to delete this to do?')) return
     
     try {
       const response = await apiService.deletePersonalTodo(token, todoId)
@@ -181,7 +209,7 @@ const PersonalTodos: React.FC = () => {
   }
 
   const handleClearCompleted = async () => {
-    if (!token || !confirm('Delete all completed todos?')) return
+    if (!token || !confirm('Delete all completed to dos?')) return
     
     try {
       const response = await apiService.deleteCompletedPersonalTodos(token)
@@ -221,7 +249,7 @@ const PersonalTodos: React.FC = () => {
       <Card className="p-6">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-          <span className="ml-3 text-gray-600">Loading todos...</span>
+          <span className="ml-3 text-gray-600">Loading to dos...</span>
         </div>
       </Card>
     )
@@ -239,7 +267,7 @@ const PersonalTodos: React.FC = () => {
           </div>
           <div>
             <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Personal To Dos</h3>
-            <p className="text-gray-500">
+            <p className="text-gray-500 dark:text-gray-400">
               {stats.pending} pending • {stats.completed} completed
               {stats.overdue > 0 && <span className="text-red-600"> • {stats.overdue} overdue</span>}
             </p>
@@ -251,35 +279,35 @@ const PersonalTodos: React.FC = () => {
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2"
         >
           <span>➕</span>
-          <span>Add Todo</span>
+          <span>Add To Do</span>
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
         <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
-          <div className="text-2xl font-bold text-gray-800">{stats.total}</div>
-          <div className="text-sm text-gray-600">Total</div>
+          <div className="text-2xl font-bold text-gray-800 dark:text-white">{stats.total}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
         </div>
         <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-blue-600">{stats.pending}</div>
-          <div className="text-sm text-gray-600">Pending</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Pending</div>
         </div>
         <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-          <div className="text-sm text-gray-600">Done</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Done</div>
         </div>
         <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-orange-600">{stats.high}</div>
-          <div className="text-sm text-gray-600">High</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">High</div>
         </div>
         <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-red-600">{stats.urgent}</div>
-          <div className="text-sm text-gray-600">Urgent</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Urgent</div>
         </div>
         <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded-lg text-center">
           <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
-          <div className="text-sm text-gray-600">Overdue</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Overdue</div>
         </div>
       </div>
 
@@ -318,17 +346,17 @@ const PersonalTodos: React.FC = () => {
         </div>
       )}
 
-      {/* Add Todo Form */}
+      {/* Add To Do Form */}
       {showAddForm && (
         <div className="mb-6 p-4 bg-white/70 dark:bg-gray-800/70 rounded-lg border dark:border-gray-700">
           <form onSubmit={handleAddTodo} className="space-y-4">
             <div>
               <input
                 type="text"
-                placeholder="Todo title..."
+                placeholder="To do title..."
                 value={newTodo.title}
                 onChange={(e) => setNewTodo(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 autoFocus
                 required
               />
@@ -339,7 +367,7 @@ const PersonalTodos: React.FC = () => {
                 <select
                   value={newTodo.priority}
                   onChange={(e) => setNewTodo(prev => ({ ...prev, priority: e.target.value as any }))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="low">💭 Low</option>
                   <option value="medium">📋 Medium</option>
@@ -354,7 +382,7 @@ const PersonalTodos: React.FC = () => {
                   placeholder="Category (optional)"
                   value={newTodo.category}
                   onChange={(e) => setNewTodo(prev => ({ ...prev, category: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               
@@ -363,7 +391,7 @@ const PersonalTodos: React.FC = () => {
                   type="date"
                   value={newTodo.dueDate}
                   onChange={(e) => setNewTodo(prev => ({ ...prev, dueDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -373,7 +401,7 @@ const PersonalTodos: React.FC = () => {
                 placeholder="Description (optional)..."
                 value={newTodo.description}
                 onChange={(e) => setNewTodo(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows={2}
               />
             </div>
@@ -404,7 +432,7 @@ const PersonalTodos: React.FC = () => {
                   value={newTodo.tagInput}
                   onChange={(e) => setNewTodo(prev => ({ ...prev, tagInput: e.target.value }))}
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                  className="flex-1 px-3 py-1 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-3 py-1 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   type="button"
@@ -421,7 +449,7 @@ const PersonalTodos: React.FC = () => {
                 type="submit"
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
               >
-                Create Todo
+                Create To Do
               </button>
               <button
                 type="button"
@@ -435,18 +463,97 @@ const PersonalTodos: React.FC = () => {
         </div>
       )}
 
-      {/* Todo List */}
+      {/* Edit To Do Form */}
+      {editingTodo && (
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border dark:border-gray-700">
+          <form onSubmit={handleUpdateTodo} className="space-y-4">
+            <div>
+              <input
+                type="text"
+                placeholder="To do title..."
+                value={editingTodo.title}
+                onChange={(e) => setEditingTodo(prev => prev ? { ...prev, title: e.target.value } : null)}
+                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                autoFocus
+                required
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <select
+                  value={editingTodo.priority}
+                  onChange={(e) => setEditingTodo(prev => prev ? { ...prev, priority: e.target.value as any } : null)}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="low">💭 Low</option>
+                  <option value="medium">📋 Medium</option>
+                  <option value="high">⚡ High</option>
+                  <option value="urgent">🚨 Urgent</option>
+                </select>
+              </div>
+              
+              <div>
+                <input
+                  type="text"
+                  placeholder="Category (optional)"
+                  value={editingTodo.category || ''}
+                  onChange={(e) => setEditingTodo(prev => prev ? { ...prev, category: e.target.value } : null)}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <input
+                  type="date"
+                  value={editingTodo.dueDate || ''}
+                  onChange={(e) => setEditingTodo(prev => prev ? { ...prev, dueDate: e.target.value } : null)}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div>
+              <textarea
+                placeholder="Description (optional)..."
+                value={editingTodo.description || ''}
+                onChange={(e) => setEditingTodo(prev => prev ? { ...prev, description: e.target.value } : null)}
+                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={2}
+              />
+            </div>
+
+            <div className="flex space-x-2">
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                Update To Do
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditingTodo(null)}
+                className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* To Do List */}
       <div className="space-y-3">
         {filteredTodos.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             <div className="text-4xl mb-2">📝</div>
-            <p>No todos found for the selected filter.</p>
+            <p>No to dos found for the selected filter.</p>
             {filter !== 'all' && (
               <button
                 onClick={() => setFilter('all')}
                 className="mt-2 text-blue-500 hover:text-blue-600"
               >
-                View all todos
+                View all to dos
               </button>
             )}
           </div>
@@ -471,7 +578,7 @@ const PersonalTodos: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <h4 className={`font-medium ${
-                      todo.completed ? 'text-green-700 line-through' : 'text-gray-800'
+                      todo.completed ? 'text-green-700 line-through' : 'text-gray-800 dark:text-white'
                     }`}>
                       {todo.title}
                     </h4>
@@ -480,6 +587,13 @@ const PersonalTodos: React.FC = () => {
                       <span className={`px-2 py-1 rounded text-xs ${getPriorityColor(todo.priority)}`}>
                         {getPriorityIcon(todo.priority)} {todo.priority}
                       </span>
+                      
+                      <button
+                        onClick={() => setEditingTodo(todo)}
+                        className="text-blue-400 hover:text-blue-600 text-sm mr-2"
+                      >
+                        ✏️
+                      </button>
                       
                       <button
                         onClick={() => handleDeleteTodo(todo.id)}
@@ -492,13 +606,13 @@ const PersonalTodos: React.FC = () => {
 
                   {todo.description && (
                     <p className={`text-sm mt-1 ${
-                      todo.completed ? 'text-green-600' : 'text-gray-600'
+                      todo.completed ? 'text-green-600' : 'text-gray-600 dark:text-gray-400'
                     }`}>
                       {todo.description}
                     </p>
                   )}
 
-                  <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                  <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
                     {todo.category && (
                       <span>📁 {todo.category}</span>
                     )}
@@ -517,7 +631,7 @@ const PersonalTodos: React.FC = () => {
                     {todo.tags.length > 0 && (
                       <div className="flex space-x-1">
                         {todo.tags.map(tag => (
-                          <span key={tag} className="px-1 py-0.5 bg-gray-100 rounded text-xs">
+                          <span key={tag} className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">
                             #{tag}
                           </span>
                         ))}

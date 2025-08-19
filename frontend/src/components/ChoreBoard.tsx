@@ -201,18 +201,18 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
 
   if (error) {
     return (
-      <Card className="p-6 bg-gradient-to-br from-white/90 to-red-50/90 backdrop-blur-sm border border-white/20">
+      <Card className="p-6 bg-gradient-to-br from-white/90 to-red-50/90 dark:from-gray-800/90 dark:to-red-900/30 backdrop-blur-sm border border-white/20 dark:border-gray-700/30">
         <div className="text-center">
           <div className="text-red-500 text-4xl mb-4">❌</div>
-          <h3 className="text-lg font-bold text-gray-800 mb-2">Failed to Load Chore Board</h3>
-          <p className="text-sm text-red-600">{error}</p>
+          <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Failed to Load Chore Board</h3>
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       </Card>
     )
   }
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-white/90 to-purple-50/90 backdrop-blur-sm border border-white/20">
+    <Card className="p-6 bg-gradient-to-br from-white/90 to-purple-50/90 dark:from-gray-800/90 dark:to-purple-900/30 backdrop-blur-sm border border-white/20 dark:border-gray-700/30">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
@@ -220,8 +220,8 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
             <span className="text-white text-xl">📋</span>
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-800">Family Chore Board</h3>
-            <p className="text-sm text-gray-500">{actualCompletionRate}% completed today</p>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white">Family Chore Board</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{actualCompletionRate}% completed today</p>
           </div>
         </div>
         
@@ -230,17 +230,17 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
             <div className="text-center">
               <div className="flex items-center space-x-1">
                 <div className="text-green-500 text-lg">✅</div>
-                <span className="font-bold text-gray-700">{actualCompletedToday}</span>
+                <span className="font-bold text-gray-700 dark:text-gray-300">{actualCompletedToday}</span>
               </div>
-              <p className="text-xs text-gray-500">Done</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Done</p>
             </div>
-            <div className="text-gray-300">|</div>
+            <div className="text-gray-300 dark:text-gray-600">|</div>
             <div className="text-center">
               <div className="flex items-center space-x-1">
                 <div className="text-blue-500 text-lg">📝</div>
-                <span className="font-bold text-gray-700">{actualTotalChores}</span>
+                <span className="font-bold text-gray-700 dark:text-gray-300">{actualTotalChores}</span>
               </div>
-              <p className="text-xs text-gray-500">Total</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
             </div>
           </div>
           
@@ -268,7 +268,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
       {/* Family Members */}
       {familyMembers.length > 0 && (
         <div className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-600 mb-3">Family Members</h4>
+          <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Family Members</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {familyMembers.map((member) => (
               <div key={member.id} className={`bg-gradient-to-r ${member.color} rounded-xl p-3 text-white relative group`}>
@@ -299,7 +299,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
       {loading ? (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading chores...</p>
+          <p className="text-gray-500 dark:text-gray-400">Loading chores...</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -309,8 +309,8 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
               key={chore.id} 
               className={`relative group p-4 rounded-2xl transition-all duration-200 ${
                 chore.isCompleted 
-                  ? 'bg-green-50 border border-green-200' 
-                  : 'bg-white/80 border border-gray-100 hover:shadow-md'
+                  ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700' 
+                  : 'bg-white/80 dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 hover:shadow-md'
               }`}
             >
               {editingChore === chore.id ? (
@@ -358,8 +358,8 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
                         <div className="flex items-center justify-between">
                           <span className={`font-medium ${
                             chore.isCompleted 
-                              ? 'line-through text-gray-500' 
-                              : 'text-gray-800'
+                              ? 'line-through text-gray-500 dark:text-gray-400' 
+                              : 'text-gray-800 dark:text-white'
                           }`}>
                             {chore.title}
                           </span>
@@ -372,7 +372,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
                                   <span>{assignee.name}</span>
                                 </div>
                               ) : (
-                                <div className="bg-gray-200 px-2 py-1 rounded-full text-gray-600 text-xs font-medium">
+                                <div className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-gray-600 dark:text-gray-300 text-xs font-medium">
                                   {chore.assignedTo}
                                 </div>
                               );
@@ -382,10 +382,10 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
                         <div className="flex items-center space-x-3 mt-1">
                           <div className="flex items-center space-x-1">
                             <div className="text-yellow-500 text-xs">⭐</div>
-                            <span className="text-xs text-gray-500">{chore.points} points</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{chore.points} points</span>
                           </div>
-                          <span className="text-xs text-gray-400">•</span>
-                          <span className="text-xs text-gray-400">Assigned by {chore.assignedBy}</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500">Assigned by {chore.assignedBy}</span>
                         </div>
                       </div>
                     </div>
@@ -396,7 +396,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
                       className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 ml-3 ${
                         chore.isCompleted 
                           ? 'bg-green-500 border-green-500 text-white' 
-                          : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50'
+                          : 'border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/30'
                       }`}
                     >
                       {chore.isCompleted && (
@@ -411,24 +411,36 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
 
           {/* Add New Chore */}
           {showAddChore ? (
-            <form onSubmit={handleAddChore} className="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4">
+            <form onSubmit={handleAddChore} className="bg-purple-50 dark:bg-purple-900/30 border-2 border-purple-200 dark:border-purple-700 rounded-2xl p-4">
               <div className="space-y-3">
                 <input
                   type="text"
                   value={newChore.title}
                   onChange={(e) => setNewChore({ ...newChore, title: e.target.value })}
                   placeholder="Enter chore name..."
-                  className="w-full px-3 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-purple-200 dark:border-purple-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   autoFocus
                 />
+                <select
+                  value={newChore.category}
+                  onChange={(e) => setNewChore({ ...newChore, category: e.target.value as any })}
+                  className="w-full px-3 py-2 border border-purple-200 dark:border-purple-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  <option value="cleaning">🧹 Cleaning (Shared)</option>
+                  <option value="kitchen">🍽️ Kitchen</option>
+                  <option value="yard">🌱 Yard Work</option>
+                  <option value="pets">🐕 Pet Care</option>
+                  <option value="personal">👤 Personal</option>
+                  <option value="other">📦 Other</option>
+                </select>
                 <div className="flex items-center space-x-3">
                   <select
                     value={newChore.assignedTo}
                     onChange={(e) => setNewChore({ ...newChore, assignedTo: e.target.value })}
-                    className="flex-1 px-3 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    required
+                    className="flex-1 px-3 py-2 border border-purple-200 dark:border-purple-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    required={newChore.category !== 'cleaning'}
                   >
-                    <option value="">Assign to...</option>
+                    <option value="">{newChore.category === 'cleaning' ? 'Assign to... (Optional)' : 'Assign to...'}</option>
                     {familyMembers.map((member) => (
                       <option key={member.id} value={member.id}>
                         {member.avatar} {member.name} {member.hasAccount ? '(Account)' : ''}
@@ -438,7 +450,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
                   <select
                     value={newChore.points}
                     onChange={(e) => setNewChore({ ...newChore, points: parseInt(e.target.value) })}
-                    className="px-3 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="px-3 py-2 border border-purple-200 dark:border-purple-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
                     <option value={1}>⭐ 1 pt</option>
                     <option value={2}>⭐ 2 pts</option>
@@ -461,7 +473,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
                     setShowAddChore(false)
                     setNewChore({ title: '', points: 1, assignedTo: '', assignedToType: 'member', priority: 'medium', category: 'other' })
                   }}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200"
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200"
                 >
                   Cancel
                 </button>
@@ -470,7 +482,7 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
           ) : (
             <button
               onClick={() => setShowAddChore(true)}
-              className="w-full border-2 border-dashed border-purple-300 rounded-2xl p-4 text-purple-600 hover:border-purple-400 hover:bg-purple-50 transition-all duration-200 flex items-center justify-center space-x-2"
+              className="w-full border-2 border-dashed border-purple-300 dark:border-purple-600 rounded-2xl p-4 text-purple-600 dark:text-purple-400 hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-all duration-200 flex items-center justify-center space-x-2"
             >
               <div className="text-xl">+</div>
               <span className="font-medium">Add New Chore</span>
@@ -479,12 +491,12 @@ const ChoreBoard: React.FC<ChoreBoardProps> = ({
 
           {/* Completed Chores Summary */}
           {actualCompletedToday > 0 && (
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100">
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 p-4 rounded-xl border border-green-100 dark:border-green-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-semibold text-green-800 mb-1">🎉 Great Progress!</h4>
-                    <p className="text-sm text-green-700">
+                    <h4 className="text-sm font-semibold text-green-800 dark:text-green-300 mb-1">🎉 Great Progress!</h4>
+                    <p className="text-sm text-green-700 dark:text-green-400">
                       {actualCompletedToday} of {actualTotalChores} chores completed ({actualCompletionRate}%)
                     </p>
                   </div>
@@ -553,7 +565,7 @@ const ChoreEditForm: React.FC<{
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
         autoFocus
         disabled={loading}
       />
@@ -561,7 +573,7 @@ const ChoreEditForm: React.FC<{
         <select
           value={assignedTo}
           onChange={(e) => setAssignedTo(e.target.value)}
-          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           disabled={loading}
         >
           <option value="">Assign to...</option>
@@ -574,7 +586,7 @@ const ChoreEditForm: React.FC<{
         <select
           value={points}
           onChange={(e) => setPoints(parseInt(e.target.value))}
-          className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           disabled={loading}
         >
           <option value={1}>⭐ 1 pt</option>
@@ -595,7 +607,7 @@ const ChoreEditForm: React.FC<{
         <button
           onClick={onCancel}
           disabled={loading}
-          className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm disabled:opacity-50"
+          className="px-3 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors text-sm disabled:opacity-50"
         >
           Cancel
         </button>

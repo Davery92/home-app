@@ -280,6 +280,378 @@ const AIMealModal: React.FC<AIMealModalProps> = ({ isOpen, onClose, onGenerate, 
   )
 }
 
+interface ManualMealModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onSave: (mealData: any) => Promise<void>
+}
+
+const ManualMealModal: React.FC<ManualMealModalProps> = ({ isOpen, onClose, onSave }) => {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    mealType: 'dinner',
+    recipe: {
+      ingredients: [{ name: '', amount: '', unit: '', notes: '' }],
+      instructions: [{ step: 1, instruction: '', duration: 0 }],
+      prepTime: 30,
+      cookTime: 30,
+      servings: 4,
+      difficulty: 'medium',
+      cuisine: '',
+      dietaryTags: [],
+      nutritionInfo: {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0
+      }
+    },
+    assignedTo: []
+  })
+  const [loading, setLoading] = useState(false)
+
+  if (!isOpen) return null
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!formData.title.trim()) return
+
+    setLoading(true)
+    try {
+      await onSave(formData)
+      setFormData({
+        title: '',
+        description: '',
+        mealType: 'dinner',
+        recipe: {
+          ingredients: [{ name: '', amount: '', unit: '', notes: '' }],
+          instructions: [{ step: 1, instruction: '', duration: 0 }],
+          prepTime: 30,
+          cookTime: 30,
+          servings: 4,
+          difficulty: 'medium',
+          cuisine: '',
+          dietaryTags: [],
+          nutritionInfo: {
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0
+          }
+        },
+        assignedTo: []
+      })
+      onClose()
+    } catch (err) {
+      console.error('Error saving manual meal:', err)
+      alert('Failed to save meal. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const addIngredient = () => {
+    setFormData(prev => ({
+      ...prev,
+      recipe: {
+        ...prev.recipe,
+        ingredients: [...prev.recipe.ingredients, { name: '', amount: '', unit: '', notes: '' }]
+      }
+    }))
+  }
+
+  const removeIngredient = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      recipe: {
+        ...prev.recipe,
+        ingredients: prev.recipe.ingredients.filter((_, i) => i !== index)
+      }
+    }))
+  }
+
+  const updateIngredient = (index: number, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      recipe: {
+        ...prev.recipe,
+        ingredients: prev.recipe.ingredients.map((ing, i) => 
+          i === index ? { ...ing, [field]: value } : ing
+        )
+      }
+    }))
+  }
+
+  const addInstruction = () => {
+    setFormData(prev => ({
+      ...prev,
+      recipe: {
+        ...prev.recipe,
+        instructions: [...prev.recipe.instructions, { 
+          step: prev.recipe.instructions.length + 1, 
+          instruction: '', 
+          duration: 0 
+        }]
+      }
+    }))
+  }
+
+  const removeInstruction = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      recipe: {
+        ...prev.recipe,
+        instructions: prev.recipe.instructions.filter((_, i) => i !== index).map((inst, i) => ({
+          ...inst,
+          step: i + 1
+        }))
+      }
+    }))
+  }
+
+  const updateInstruction = (index: number, field: string, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      recipe: {
+        ...prev.recipe,
+        instructions: prev.recipe.instructions.map((inst, i) => 
+          i === index ? { ...inst, [field]: value } : inst
+        )
+      }
+    }))
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+      <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+              ✏️ Add Manual Meal Plan
+            </h2>
+            <button 
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <span className="text-gray-400 hover:text-gray-600 text-xl">×</span>
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Meal Title *
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter meal title..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Meal Type
+                </label>
+                <select
+                  value={formData.mealType}
+                  onChange={(e) => setFormData({ ...formData, mealType: e.target.value as any })}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="breakfast">🍳 Breakfast</option>
+                  <option value="lunch">🥪 Lunch</option>
+                  <option value="dinner">🍽️ Dinner</option>
+                  <option value="snack">🍎 Snack</option>
+                  <option value="dessert">🍰 Dessert</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Description
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={2}
+                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                placeholder="Brief description of the meal..."
+              />
+            </div>
+
+            {/* Recipe Details */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Prep Time (min)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.recipe.prepTime}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    recipe: { ...formData.recipe, prepTime: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Cook Time (min)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.recipe.cookTime}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    recipe: { ...formData.recipe, cookTime: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Servings
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.recipe.servings}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    recipe: { ...formData.recipe, servings: parseInt(e.target.value) || 1 }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+            </div>
+
+            {/* Ingredients */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Ingredients
+                </label>
+                <button
+                  type="button"
+                  onClick={addIngredient}
+                  className="px-3 py-1 text-sm bg-green-100 text-green-600 rounded hover:bg-green-200"
+                >
+                  + Add Ingredient
+                </button>
+              </div>
+              <div className="space-y-2">
+                {formData.recipe.ingredients.map((ingredient, index) => (
+                  <div key={index} className="grid grid-cols-4 gap-2">
+                    <input
+                      type="text"
+                      placeholder="Ingredient name"
+                      value={ingredient.name}
+                      onChange={(e) => updateIngredient(index, 'name', e.target.value)}
+                      className="col-span-2 px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Amount"
+                      value={ingredient.amount}
+                      onChange={(e) => updateIngredient(index, 'amount', e.target.value)}
+                      className="px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+                    />
+                    <div className="flex space-x-1">
+                      <input
+                        type="text"
+                        placeholder="Unit"
+                        value={ingredient.unit}
+                        onChange={(e) => updateIngredient(index, 'unit', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+                      />
+                      {formData.recipe.ingredients.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeIngredient(index)}
+                          className="px-2 py-2 text-red-500 hover:text-red-700 text-sm"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Instructions
+                </label>
+                <button
+                  type="button"
+                  onClick={addInstruction}
+                  className="px-3 py-1 text-sm bg-green-100 text-green-600 rounded hover:bg-green-200"
+                >
+                  + Add Step
+                </button>
+              </div>
+              <div className="space-y-2">
+                {formData.recipe.instructions.map((instruction, index) => (
+                  <div key={index} className="flex space-x-2">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-medium">
+                      {instruction.step}
+                    </div>
+                    <textarea
+                      placeholder="Describe this step..."
+                      value={instruction.instruction}
+                      onChange={(e) => updateInstruction(index, 'instruction', e.target.value)}
+                      rows={2}
+                      className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded text-sm focus:outline-none focus:ring-1 focus:ring-green-500 resize-none"
+                    />
+                    {formData.recipe.instructions.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeInstruction(index)}
+                        className="flex-shrink-0 px-2 py-2 text-red-500 hover:text-red-700 text-sm"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50"
+              >
+                {loading ? 'Saving...' : 'Save Meal Plan'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </Card>
+    </div>
+  )
+}
+
 interface MealModalProps {
   isOpen: boolean
   onClose: () => void
@@ -539,6 +911,7 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
     getMealsByDateRange 
   } = useMealPlan()
   const [showAIModal, setShowAIModal] = useState(false)
+  const [showManualModal, setShowManualModal] = useState(false)
   
   // Use prop value if provided
   React.useEffect(() => {
@@ -721,6 +1094,21 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
     }
   }
 
+  const handleManualEntry = async (mealData: any) => {
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      await createMealPlan({
+        ...mealData,
+        scheduledDate: today,
+        aiGenerated: false
+      })
+      setShowManualModal(false)
+    } catch (err) {
+      console.error('Failed to save manual meal:', err)
+      alert('Failed to save meal plan')
+    }
+  }
+
   const handleSaveGeneratedMeal = async () => {
     if (!generatedMeal) return
     
@@ -823,6 +1211,13 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
                   >
                     <span>🤖</span>
                     <span>Generate</span>
+                  </button>
+                  <button
+                    onClick={() => setShowManualModal(true)}
+                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-2"
+                  >
+                    <span>✏️</span>
+                    <span>Add Manually</span>
                   </button>
                   <button
                     onClick={() => setIsExpanded(false)}
@@ -996,6 +1391,13 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
               <span>Generate</span>
             </button>
             <button
+              onClick={() => setShowManualModal(true)}
+              className="px-3 py-1 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-1"
+            >
+              <span>✏️</span>
+              <span>Add Manually</span>
+            </button>
+            <button
               onClick={() => setIsExpanded(true)}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors border border-gray-200"
               title="Expand to full screen"
@@ -1149,6 +1551,13 @@ const MealsToday: React.FC<MealsTodayProps> = ({ showAIModalProp, onCloseAIModal
         }}
         onGenerate={handleGenerateAI}
         favoriteMeals={favoriteMeals}
+      />
+
+      {/* Manual Meal Entry Modal */}
+      <ManualMealModal
+        isOpen={showManualModal}
+        onClose={() => setShowManualModal(false)}
+        onSave={handleManualEntry}
       />
 
       {/* Generated Meal Preview Modal */}

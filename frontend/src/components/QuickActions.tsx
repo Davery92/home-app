@@ -135,7 +135,7 @@ const QuickTaskModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-800">Quick Add Task</h2>
-              <p className="text-sm text-gray-500">Add a task to your personal todo list</p>
+              <p className="text-sm text-gray-500">Add a task to your personal to do list</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200">

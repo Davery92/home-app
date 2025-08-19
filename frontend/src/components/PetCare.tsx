@@ -105,7 +105,6 @@ const PetCare: React.FC = () => {
     notes: ''
   })
   const [newVaccine, setNewVaccine] = useState({
-    vaccineName: '',
     vaccineType: 'other',
     administeredDate: '',
     expirationDate: '',
@@ -322,12 +321,11 @@ const PetCare: React.FC = () => {
 
   const handleAddVaccine = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token || !selectedPet || !newVaccine.vaccineName.trim()) return
+    if (!token || !selectedPet || !newVaccine.vaccineType) return
     
     try {
       const vaccineData = {
         ...newVaccine,
-        vaccineName: newVaccine.vaccineName.trim(),
         notes: newVaccine.notes.trim()
       }
 
@@ -336,7 +334,6 @@ const PetCare: React.FC = () => {
       if (response.success) {
         setVaccines(prev => [...prev, response.vaccine])
         setNewVaccine({
-          vaccineName: '',
           vaccineType: 'other',
           administeredDate: '',
           expirationDate: '',
@@ -427,7 +424,7 @@ const PetCare: React.FC = () => {
               <span className="text-2xl">🐾</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Pet Care Center</h1>
+              <h1 className="text-2xl font-bold text-white">Pet Care Center</h1>
               <p className="opacity-90">Manage your pets and their health records</p>
             </div>
           </div>
@@ -517,8 +514,8 @@ const PetCare: React.FC = () => {
                     key={pet.id}
                     className={`p-4 rounded-lg border cursor-pointer transition-all ${
                       selectedPet?.id === pet.id
-                        ? 'bg-green-50 border-green-300'
-                        : 'bg-white border-gray-200 hover:bg-gray-50'
+                        ? 'bg-green-50 dark:bg-green-900/30 border-green-300 dark:border-green-700'
+                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                     onClick={() => setSelectedPet(pet)}
                   >
@@ -575,38 +572,38 @@ const PetCare: React.FC = () => {
                 {selectedPet.breed && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 dark:text-gray-400">Breed:</span>
-                    <span>{selectedPet.breed}</span>
+                    <span className="text-gray-800 dark:text-white">{selectedPet.breed}</span>
                   </div>
                 )}
                 
                 {selectedPet.age && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 dark:text-gray-400">Age:</span>
-                    <span>{selectedPet.age}</span>
+                    <span className="text-gray-800 dark:text-white">{selectedPet.age}</span>
                   </div>
                 )}
                 
                 <div className="flex justify-between">
                   <span className="text-gray-500 dark:text-gray-400">Gender:</span>
-                  <span className="capitalize">{selectedPet.gender}</span>
+                  <span className="capitalize text-gray-800 dark:text-white">{selectedPet.gender}</span>
                 </div>
                 
                 <div className="flex justify-between">
                   <span className="text-gray-500 dark:text-gray-400">Spayed/Neutered:</span>
-                  <span>{selectedPet.spayedNeutered ? 'Yes' : 'No'}</span>
+                  <span className="text-gray-800 dark:text-white">{selectedPet.spayedNeutered ? 'Yes' : 'No'}</span>
                 </div>
                 
                 {selectedPet.weight && selectedPet.weight.value > 0 && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 dark:text-gray-400">Weight:</span>
-                    <span>{selectedPet.weight.value} {selectedPet.weight.unit}</span>
+                    <span className="text-gray-800 dark:text-white">{selectedPet.weight.value} {selectedPet.weight.unit}</span>
                   </div>
                 )}
                 
                 {selectedPet.veterinarian?.name && (
                   <div className="flex justify-between">
                     <span className="text-gray-500 dark:text-gray-400">Veterinarian:</span>
-                    <span>{selectedPet.veterinarian.name}</span>
+                    <span className="text-gray-800 dark:text-white">{selectedPet.veterinarian.name}</span>
                   </div>
                 )}
                 
@@ -766,9 +763,9 @@ const PetCare: React.FC = () => {
       {/* Add Pet Modal */}
       {showAddPetForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Add New Pet</h2>
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Add New Pet</h2>
               <button
                 onClick={() => setShowAddPetForm(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -785,7 +782,7 @@ const PetCare: React.FC = () => {
                     type="text"
                     value={newPet.name}
                     onChange={(e) => setNewPet(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   />
                 </div>
@@ -795,7 +792,7 @@ const PetCare: React.FC = () => {
                   <select
                     value={newPet.type}
                     onChange={(e) => setNewPet(prev => ({ ...prev, type: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     {petTypes.map(type => (
                       <option key={type.key} value={type.key}>{type.label}</option>
@@ -809,7 +806,7 @@ const PetCare: React.FC = () => {
                     type="text"
                     value={newPet.breed}
                     onChange={(e) => setNewPet(prev => ({ ...prev, breed: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
                 
@@ -819,7 +816,7 @@ const PetCare: React.FC = () => {
                     type="date"
                     value={newPet.birthDate}
                     onChange={(e) => setNewPet(prev => ({ ...prev, birthDate: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
                 
@@ -828,7 +825,7 @@ const PetCare: React.FC = () => {
                   <select
                     value={newPet.gender}
                     onChange={(e) => setNewPet(prev => ({ ...prev, gender: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="unknown">Unknown</option>
                     <option value="male">Male</option>
@@ -844,7 +841,7 @@ const PetCare: React.FC = () => {
                       onChange={(e) => setNewPet(prev => ({ ...prev, spayedNeutered: e.target.checked }))}
                       className="rounded"
                     />
-                    <span className="text-sm text-gray-700">Spayed/Neutered</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Spayed/Neutered</span>
                   </label>
                 </div>
               </div>
@@ -882,9 +879,9 @@ const PetCare: React.FC = () => {
       {/* Add Vaccine Modal */}
       {showAddVaccineForm && selectedPet && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Add Vaccine Record for {selectedPet.name}</h2>
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Add Vaccine Record for {selectedPet.name}</h2>
               <button
                 onClick={() => setShowAddVaccineForm(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -896,22 +893,12 @@ const PetCare: React.FC = () => {
             <form onSubmit={handleAddVaccine} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vaccine Name</label>
-                  <input
-                    type="text"
-                    value={newVaccine.vaccineName}
-                    onChange={(e) => setNewVaccine(prev => ({ ...prev, vaccineName: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    required
-                  />
-                </div>
-                
-                <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vaccine Type</label>
                   <select
                     value={newVaccine.vaccineType}
                     onChange={(e) => setNewVaccine(prev => ({ ...prev, vaccineType: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    required
                   >
                     {vaccineTypes
                       .filter(type => type.category === 'all' || type.category === selectedPet.type)
@@ -927,7 +914,7 @@ const PetCare: React.FC = () => {
                     type="date"
                     value={newVaccine.administeredDate}
                     onChange={(e) => setNewVaccine(prev => ({ ...prev, administeredDate: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   />
                 </div>
@@ -938,7 +925,7 @@ const PetCare: React.FC = () => {
                     type="date"
                     value={newVaccine.expirationDate}
                     onChange={(e) => setNewVaccine(prev => ({ ...prev, expirationDate: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   />
                 </div>
@@ -949,7 +936,7 @@ const PetCare: React.FC = () => {
                     type="date"
                     value={newVaccine.nextDueDate}
                     onChange={(e) => setNewVaccine(prev => ({ ...prev, nextDueDate: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   />
                 </div>
@@ -962,7 +949,7 @@ const PetCare: React.FC = () => {
                       onChange={(e) => setNewVaccine(prev => ({ ...prev, isCore: e.target.checked }))}
                       className="rounded"
                     />
-                    <span className="text-sm text-gray-700">Core Vaccine</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Core Vaccine</span>
                   </label>
                 </div>
               </div>

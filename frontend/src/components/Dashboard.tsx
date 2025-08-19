@@ -23,7 +23,7 @@ import { useChores } from '@/hooks/useChores'
 const Dashboard: React.FC = () => {
   const [isAIOpen, setIsAIOpen] = useState(false)
   const [isFamilySettingsOpen, setIsFamilySettingsOpen] = useState(false)
-  const [currentView, setCurrentView] = useState<'home' | 'calendar' | 'mealplan' | 'todos' | 'cleaning' | 'reminders' | 'pets' | 'gifts' | 'habits' | 'shopping'>('home')
+  const [currentView, setCurrentView] = useState<'home' | 'calendar' | 'mealplan' | 'todos' | 'cleaning' | 'reminders' | 'pets' | 'gifts' | 'habits' | 'shopping' | 'chores'>('home')
   const { user, token, family } = useAuth()
   
   // States for quick access
@@ -77,7 +77,7 @@ const Dashboard: React.FC = () => {
               { key: 'home', label: 'Home', icon: '🏠' },
               { key: 'calendar', label: 'Calendar', icon: '📅' },
               { key: 'mealplan', label: 'Meal Plan', icon: '🍽️' },
-              { key: 'todos', label: 'To Do', icon: '📝' },
+              { key: 'todos', label: 'To Dos', icon: '📝' },
               { key: 'cleaning', label: 'Cleaning Schedule', icon: '🧹' },
               { key: 'reminders', label: 'Reminders', icon: '⏰' }
             ].map(tab => (
@@ -98,6 +98,7 @@ const Dashboard: React.FC = () => {
           {/* Bottom Row */}
           <div className="flex space-x-1">
             {[
+              { key: 'chores', label: 'Chores', icon: '🧹' },
               { key: 'pets', label: 'Pets', icon: '🐾' },
               { key: 'gifts', label: 'Gift Tracker', icon: '🎁' },
               { key: 'habits', label: 'Habit Tracker', icon: '✅' },
@@ -243,6 +244,13 @@ const Dashboard: React.FC = () => {
         {currentView === 'gifts' && (
           <div className="max-w-6xl mx-auto">
             <GiftTracker />
+          </div>
+        )}
+
+        {/* Chores View */}
+        {currentView === 'chores' && (
+          <div className="max-w-6xl mx-auto">
+            <ChoreBoard />
           </div>
         )}
       </div>

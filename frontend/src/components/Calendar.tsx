@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import Card from './ui/Card'
 import { useCalendar, CalendarEvent } from '@/hooks/useCalendar'
 import { useFamilyMembers } from '@/hooks/useFamilyMembers'
@@ -11,6 +11,7 @@ interface CalendarModalProps {
   selectedDate?: Date
   event?: CalendarEvent
   onSave: (eventData: any) => Promise<void>
+  onDelete?: (eventId: string) => Promise<void>
 }
 
 const AddEventModal: React.FC<CalendarModalProps> = ({ 
@@ -18,24 +19,61 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
   onClose, 
   selectedDate, 
   event, 
-  onSave 
+  onSave,
+  onDelete 
 }) => {
   const { members } = useFamilyMembers()
   const [formData, setFormData] = useState({
-    title: event?.title || '',
-    description: event?.description || '',
-    startDate: event?.startDate?.split('T')[0] || selectedDate?.toISOString().split('T')[0] || '',
-    startTime: event?.startDate ? new Date(event.startDate).toTimeString().substring(0, 5) : '09:00',
-    endDate: event?.endDate?.split('T')[0] || selectedDate?.toISOString().split('T')[0] || '',
-    endTime: event?.endDate ? new Date(event.endDate).toTimeString().substring(0, 5) : '10:00',
-    allDay: event?.allDay || false,
-    location: event?.location || '',
-    category: event?.category || 'family',
-    priority: event?.priority || 'medium',
-    color: event?.color || 'blue',
-    assignedTo: event?.assignedTo || []
+    title: '',
+    description: '',
+    startDate: '',
+    startTime: '09:00',
+    endDate: '',
+    endTime: '10:00',
+    allDay: false,
+    location: '',
+    category: 'amanda_work',
+    color: 'blue',
+    assignedTo: []
   })
   const [loading, setLoading] = useState(false)
+
+  // Update form data when modal opens or props change
+  React.useEffect(() => {
+    if (isOpen) {
+      if (event) {
+        // Editing existing event
+        setFormData({
+          title: event.title || '',
+          description: event.description || '',
+          startDate: event.startDate?.split('T')[0] || '',
+          startTime: event.startDate ? new Date(event.startDate).toTimeString().substring(0, 5) : '09:00',
+          endDate: event.endDate?.split('T')[0] || '',
+          endTime: event.endDate ? new Date(event.endDate).toTimeString().substring(0, 5) : '10:00',
+          allDay: event.allDay || false,
+          location: event.location || '',
+          category: event.category || 'amanda_work',
+          color: event.color || 'blue',
+          assignedTo: event.assignedTo || []
+        })
+      } else {
+        // Creating new event
+        setFormData({
+          title: '',
+          description: '',
+          startDate: selectedDate?.toISOString().split('T')[0] || '',
+          startTime: '09:00',
+          endDate: selectedDate?.toISOString().split('T')[0] || '',
+          endTime: '10:00',
+          allDay: false,
+          location: '',
+          category: 'amanda_work',
+          color: 'blue',
+          assignedTo: []
+        })
+      }
+    }
+  }, [isOpen, event, selectedDate])
 
   if (!isOpen) return null
 
@@ -45,12 +83,12 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
 
     try {
       const startDateTime = formData.allDay 
-        ? `${formData.startDate}T00:00:00.000Z`
-        : `${formData.startDate}T${formData.startTime}:00.000Z`
+        ? `${formData.startDate}T00:00:00`
+        : `${formData.startDate}T${formData.startTime}:00`
       
       const endDateTime = formData.allDay 
-        ? `${formData.endDate}T23:59:59.999Z`
-        : `${formData.endDate}T${formData.endTime}:00.000Z`
+        ? `${formData.endDate}T23:59:59`
+        : `${formData.endDate}T${formData.endTime}:00`
 
       await onSave({
         ...formData,
@@ -66,16 +104,30 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
     }
   }
 
+  const handleDelete = async () => {
+    if (!event || !onDelete) return
+    
+    if (confirm('Are you sure you want to delete this event?')) {
+      try {
+        await onDelete(event.id)
+        onClose()
+      } catch (err) {
+        console.error('Error deleting event:', err)
+        alert('Failed to delete event. Please try again.')
+      }
+    }
+  }
+
   const categoryOptions = [
-    { value: 'family', label: 'Family', color: 'blue' },
-    { value: 'personal', label: 'Personal', color: 'green' },
-    { value: 'work', label: 'Work', color: 'purple' },
-    { value: 'health', label: 'Health', color: 'red' },
-    { value: 'school', label: 'School', color: 'yellow' },
-    { value: 'social', label: 'Social', color: 'pink' },
-    { value: 'holiday', label: 'Holiday', color: 'orange' },
-    { value: 'birthday', label: 'Birthday', color: 'teal' },
-    { value: 'other', label: 'Other', color: 'gray' }
+    { value: 'amanda_work', label: "Amanda's work", color: 'purple' },
+    { value: 'david_work', label: "David's work", color: 'blue' },
+    { value: 'everett', label: 'Everett', color: 'green' },
+    { value: 'dogs', label: 'Dogs', color: 'yellow' },
+    { value: 'doctor_appts', label: 'Doctor Appts', color: 'red' },
+    { value: 'pay_day', label: 'Pay Day', color: 'emerald' },
+    { value: 'fun', label: 'Fun', color: 'pink' },
+    { value: 'birthdays', label: 'Birthdays', color: 'orange' },
+    { value: 'school', label: 'School', color: 'indigo' }
   ]
 
   return (
@@ -96,7 +148,7 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Event Title *
               </label>
               <input
@@ -110,7 +162,7 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Description
               </label>
               <textarea
@@ -130,14 +182,14 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
                 onChange={(e) => setFormData({ ...formData, allDay: e.target.checked })}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <label htmlFor="allDay" className="text-sm font-medium text-gray-700">
+              <label htmlFor="allDay" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 All Day Event
               </label>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Start Date
                 </label>
                 <input
@@ -149,7 +201,7 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   End Date
                 </label>
                 <input
@@ -165,7 +217,7 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
             {!formData.allDay && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Start Time
                   </label>
                   <input
@@ -176,7 +228,7 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     End Time
                   </label>
                   <input
@@ -190,7 +242,7 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Location
               </label>
               <input
@@ -204,7 +256,7 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Category
                 </label>
                 <select
@@ -219,37 +271,36 @@ const AddEventModal: React.FC<CalendarModalProps> = ({
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Priority
-                </label>
-                <select
-                  value={formData.priority}
-                  onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50"
-              >
-                {loading ? 'Saving...' : event ? 'Update Event' : 'Add Event'}
-              </button>
+            <div className="flex justify-between pt-4">
+              <div>
+                {event && (
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                  >
+                    Delete Event
+                  </button>
+                )}
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'Saving...' : event ? 'Update Event' : 'Add Event'}
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -344,19 +395,24 @@ const Calendar: React.FC = () => {
     }
   }
 
+  const handleDeleteEvent = async (eventId: string) => {
+    await deleteEvent(eventId)
+    setEditingEvent(null)
+  }
+
   const getCategoryColor = (category: string) => {
     const colors = {
-      family: 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200',
-      personal: 'bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200',
-      work: 'bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200',
-      health: 'bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200',
-      school: 'bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200',
-      social: 'bg-pink-200 dark:bg-pink-800 text-pink-800 dark:text-pink-200',
-      holiday: 'bg-orange-200 dark:bg-orange-800 text-orange-800 dark:text-orange-200',
-      birthday: 'bg-teal-200 dark:bg-teal-800 text-teal-800 dark:text-teal-200',
-      other: 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+      amanda_work: 'bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200',
+      david_work: 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200',
+      everett: 'bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200',
+      dogs: 'bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200',
+      doctor_appts: 'bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200',
+      pay_day: 'bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200',
+      fun: 'bg-pink-200 dark:bg-pink-800 text-pink-800 dark:text-pink-200',
+      birthdays: 'bg-orange-200 dark:bg-orange-800 text-orange-800 dark:text-orange-200',
+      school: 'bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200'
     }
-    return colors[category as keyof typeof colors] || colors.other
+    return colors[category as keyof typeof colors] || 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
   }
 
   const isToday = (date: Date) => {
@@ -500,6 +556,7 @@ const Calendar: React.FC = () => {
         onClose={() => setEditingEvent(null)}
         event={editingEvent || undefined}
         onSave={handleEditEvent}
+        onDelete={handleDeleteEvent}
       />
     </>
   )

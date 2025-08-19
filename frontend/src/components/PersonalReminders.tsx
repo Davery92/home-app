@@ -88,10 +88,8 @@ const PersonalReminders: React.FC = () => {
     notificationsEnabled: true,
     notificationMethods: ['push'] as string[],
     notificationAdvance: [] as Array<{ value: number; unit: string }>,
-    location: '',
     tags: [] as string[],
-    tagInput: '',
-    category: ''
+    tagInput: ''
   })
 
   const reminderTypes = [
@@ -253,9 +251,7 @@ const PersonalReminders: React.FC = () => {
           methods: newReminder.notificationMethods,
           advance: newReminder.notificationAdvance
         },
-        location: newReminder.location.trim(),
-        tags: newReminder.tags,
-        category: newReminder.category.trim()
+        tags: newReminder.tags
       }
 
       const response = await apiService.createPersonalReminder(token, reminderData)
@@ -277,10 +273,8 @@ const PersonalReminders: React.FC = () => {
           notificationsEnabled: true,
           notificationMethods: ['push'],
           notificationAdvance: [],
-          location: '',
           tags: [],
-          tagInput: '',
-          category: ''
+          tagInput: ''
         })
         setShowAddForm(false)
         fetchReminders() // Refresh stats
@@ -318,9 +312,7 @@ const PersonalReminders: React.FC = () => {
         dueDate: newReminder.dueDate,
         reminderTime: newReminder.allDay ? newReminder.dueDate : newReminder.reminderTime || newReminder.dueDate,
         allDay: newReminder.allDay,
-        location: newReminder.location.trim(),
-        tags: newReminder.tags,
-        category: newReminder.category.trim()
+        tags: newReminder.tags
       }
 
       const response = await apiService.updatePersonalReminder(token, editingReminder.id, updates)
@@ -344,10 +336,8 @@ const PersonalReminders: React.FC = () => {
           notificationsEnabled: true,
           notificationMethods: ['push'],
           notificationAdvance: [],
-          location: '',
           tags: [],
-          tagInput: '',
-          category: ''
+          tagInput: ''
         })
         setEditingReminder(null)
         fetchReminders()
@@ -631,7 +621,7 @@ const PersonalReminders: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date</label>
                 <input
                   type="date"
                   value={newReminder.dueDate}
@@ -656,7 +646,7 @@ const PersonalReminders: React.FC = () => {
 
             {!newReminder.allDay && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Reminder Time</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Reminder Time</label>
                 <input
                   type="datetime-local"
                   value={newReminder.reminderTime}
@@ -676,43 +666,25 @@ const PersonalReminders: React.FC = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Location (optional)"
-                  value={newReminder.location}
-                  onChange={(e) => setNewReminder(prev => ({ ...prev, location: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-              
-              <div>
-                <input
-                  type="text"
-                  placeholder="Category (optional)"
-                  value={newReminder.category}
-                  onChange={(e) => setNewReminder(prev => ({ ...prev, category: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-            </div>
 
 
             {/* Recurring Options */}
-            <div className="flex items-center space-x-4">
-              <label className="flex items-center space-x-2">
+            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+              <label className="flex items-center space-x-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={newReminder.recurringEnabled}
                   onChange={(e) => setNewReminder(prev => ({ ...prev, recurringEnabled: e.target.checked }))}
-                  className="rounded"
+                  className="w-5 h-5 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2"
                 />
-                <span className="text-sm text-gray-700">Recurring</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-lg">🔄</span>
+                  <span className="text-base font-medium text-purple-800 dark:text-purple-300">Make this reminder recurring</span>
+                </div>
               </label>
-
+            
               {newReminder.recurringEnabled && (
-                <>
+                <div className="mt-4 flex items-center space-x-4">
                   <select
                     value={newReminder.recurringFrequency}
                     onChange={(e) => setNewReminder(prev => ({ ...prev, recurringFrequency: e.target.value }))}
@@ -732,13 +704,13 @@ const PersonalReminders: React.FC = () => {
                     className="w-20 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                     min="1"
                   />
-                </>
+                </div>
               )}
             </div>
 
             {/* Tags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tags</label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {newReminder.tags.map(tag => (
                   <span
@@ -834,7 +806,7 @@ const PersonalReminders: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <h4 className={`font-medium flex items-center space-x-2 ${
-                      reminder.completed ? 'text-green-700 line-through' : 'text-gray-800'
+                      reminder.completed ? 'text-green-700 line-through' : 'text-gray-800 dark:text-white'
                     }`}>
                       <span>{getTypeIcon(reminder.type)}</span>
                       <span>{reminder.title}</span>
@@ -884,10 +856,8 @@ const PersonalReminders: React.FC = () => {
                             notificationsEnabled: reminder.notifications.enabled,
                             notificationMethods: reminder.notifications.methods || ['push'],
                             notificationAdvance: reminder.notifications.advance || [],
-                            location: reminder.location || '',
                             tags: reminder.tags,
-                            tagInput: '',
-                            category: reminder.category || ''
+                            tagInput: ''
                           })
                           setShowAddForm(true)
                         }}

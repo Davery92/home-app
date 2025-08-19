@@ -85,7 +85,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Item Name *
               </label>
               <input
@@ -93,14 +93,14 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter item name..."
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Quantity
                 </label>
                 <input
@@ -108,17 +108,17 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
                   min="1"
                   value={formData.quantity}
                   onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Category
                 </label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {categoryOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -130,7 +130,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Estimated Price
               </label>
               <input
@@ -139,20 +139,20 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) =
                 min="0"
                 value={formData.estimatedPrice}
                 onChange={(e) => setFormData({ ...formData, estimatedPrice: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Notes
               </label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={2}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 placeholder="Any additional notes..."
               />
             </div>
@@ -287,8 +287,8 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
       <Card className="p-6" gradient={true}>
         <div className="text-center">
           <div className="text-red-500 text-4xl mb-4">❌</div>
-          <h3 className="text-lg font-bold text-gray-800 mb-2">Failed to Load Grocery List</h3>
-          <p className="text-sm text-red-600">{error}</p>
+          <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Failed to Load Grocery List</h3>
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       </Card>
     )
@@ -304,8 +304,8 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
               <span className="text-white text-lg">🛒</span>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-800">Grocery List</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white">Grocery List</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {totalActiveItems} active items • ${stats.estimatedCost.toFixed(2)} estimated
               </p>
             </div>
@@ -334,7 +334,7 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
         {loading && (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
-            <span className="ml-2 text-gray-600">Loading grocery list...</span>
+            <span className="ml-2 text-gray-600 dark:text-gray-400">Loading grocery list...</span>
           </div>
         )}
 
@@ -346,13 +346,13 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
                 <div key={category} className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <span className="text-lg">{getCategoryEmoji(category)}</span>
-                    <h4 className="text-sm font-medium text-gray-700 capitalize">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
                       {category} ({items.length})
                     </h4>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-6">
                     {items.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between group hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                      <div key={item.id} className="flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors">
                         <div className="flex items-center flex-1 min-w-0">
                           <input
                             type="checkbox"
@@ -362,17 +362,17 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
                           />
                           <div className="ml-3 flex-1 min-w-0">
                             <div className={`text-sm truncate ${
-                              item.isPurchased ? 'line-through text-gray-400' : 'text-gray-900'
+                              item.isPurchased ? 'line-through text-gray-400' : 'text-gray-800 dark:text-white'
                             }`}>
                               {item.name}
                               {item.quantity > 1 && (
-                                <span className="text-xs text-gray-500 ml-1">
+                                <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
                                   ({item.quantity}{item.unit})
                                 </span>
                               )}
                             </div>
                             {item.estimatedPrice && (
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
                                 ${item.estimatedPrice.toFixed(2)}
                               </div>
                             )}
@@ -399,8 +399,8 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
             ) : (
               <div className="text-center py-8">
                 <div className="text-gray-400 text-4xl mb-4">🛒</div>
-                <h4 className="text-lg font-medium text-gray-600 mb-2">No items in your list</h4>
-                <p className="text-sm text-gray-500 mb-4">Add some items to get started!</p>
+                <h4 className="text-lg font-medium text-gray-600 dark:text-gray-400 mb-2">No items in your list</h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Add some items to get started!</p>
                 <button
                   onClick={() => setShowAddModal(true)}
                   className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
@@ -416,7 +416,7 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <span className="text-lg">✅</span>
-                    <h4 className="text-sm font-medium text-gray-700">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Recently Purchased ({purchasedItems.length})
                     </h4>
                   </div>
@@ -431,7 +431,7 @@ const GroceryList: React.FC<GroceryListProps> = ({ showAddModalProp, onCloseAddM
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-6">
                   {purchasedItems.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between group hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                    <div key={item.id} className="flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors">
                       <div className="flex items-center flex-1">
                         <input
                           type="checkbox"
